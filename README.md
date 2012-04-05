@@ -61,8 +61,4 @@ will be
                 }
             }
 
-        });
-    });
-
-
 4. Thats all
