@@ -33,23 +33,30 @@ will be
 
 1. Link to page necessary files
 
-    <script type="text/javascript" src="../../../js/treeview.ex/jquery.json-2.3.min.js"></script>
-    <script type="text/javascript" src="../../../js/treeview.ex/kendo.treeview.ex.js"></script>
+		<script type="text/javascript" src="../../../js/jquery-1.7.2.js"></script>
+		<script type="text/javascript" src="../../../js/kendo.web.min.js"></script>
+
+		<script type="text/javascript" src="../../../js/treeview.ex/jquery.json-2.3.min.js"></script>
+		<script type="text/javascript" src="../../../js/treeview.ex/kendo.treeview.ex.js"></script>
 
 2. Create TreeView as usual, except the "data" attribute. Place to "data" all necessary data (usually an id, etc.)
 
-	$(document).ready(function() {
-	    var tv = $("#treeview").kendoTreeView({
+	
 
-	        dataSource: [
-	            {
-	                data: {id: 'item-id', extra: 'extra-data'},
-	                text: 'node #1'
-	            },
-	            {
-	                text: 'node #2'
-	            }
-	        ],
+		$(document).ready(function() {
+	
+			var tv = $("#treeview").kendoTreeView({
+	
+			dataSource: [
+				{
+					data: {id: 'item-id', extra: 'extra-data'},
+					text: 'node #1'
+				},
+				{
+					text: 'node #2'
+				}
+			],
+
 
 3. Catch the data by click with
 
