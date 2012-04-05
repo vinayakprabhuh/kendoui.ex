@@ -4,7 +4,7 @@ Here, I tried to extend Awesome Kendo UI with missed functionality.
 
 ## Kendo UI TreeView Hook
 
-Kendo UI has TreeView widget. This widget doesn’t has an ability to link extra data to tree node (usefull when you click it). O_O. 
+Kendo UI has TreeView widget. This widget doesnâ€™t has an ability to link extra data to tree node (usefull when you click it). O_O. 
 I tried to correct it a little bit. Works only with TreeViews with dataSource.
 
 Treeview generates html code of all items of dataSource and then inserts it to wrapper object by jQuery.html().
@@ -12,14 +12,12 @@ We don't have an access to DOM objects to assign to them additional data.
 
 So I made callback with html string. It called when html string generated. You may want to change it.
 
-  ...
-      addnode: function (htmlstring) {
-          //change htmlstring
-          //carefull with groups
+  addnode: function (htmlstring) {
+      //change htmlstring
+      //carefull with groups
 
-          return htmlstring
-      }
-  ...
+      return htmlstring
+  }
 
 And added auto data-data insertion.
 
@@ -52,8 +50,6 @@ will be
 	                    text: 'node #2'
 	                }
 	            ],
-
-	...
 
 3. Catch the data by click with
 
