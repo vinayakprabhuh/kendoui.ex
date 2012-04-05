@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Basic usage with extra data</title>
+    <script type="text/javascript" src="../../../js/jquery-1.7.2.js"></script>
+    <script type="text/javascript" src="../../../js/kendo.web.min.js"></script>
+    <script type="text/javascript" src="../../../js/treeview.ex/jquery.json-2.3.min.js"></script>
+    <script type="text/javascript" src="../../../js/treeview.ex/kendo.treeview.ex.js"></script>
+
+    <link href="../../../styles/kendo.common.min.css" rel="stylesheet" />
+    <link href="../../../styles/kendo.default.min.css" rel="stylesheet" />
+</head>
+
+<body>
+        <div id="example" class="k-content">
+            <div class="demo-section" id="treeview"></div>
+            <script>
+                $(document).ready(function() {
+                    var tv = $("#treeview").kendoTreeView({
+
+                        dataSource: [
+                            {
+                                data: {id: 'item-id', extra: 'extra-data'},
+                                text: 'node #1'
+                            },
+                            {
+                                text: 'node #2'
+                            },
+                            {
+                                text: 'node #3',
+                                items: [
+                                    {
+                                        text: 'sub-node #31'
+                                    }
+                                ]
+                            }
+                        ],
+
+                        select: function(e) {
+
+                            if ($(e.node).data('data')) {
+                                console.log($(e.node).data('data').id, $(e.node).data('data').extra);
+                                alert("Node id: " + ($(e.node).data('data').id));
+                            }
+                        },
+
+                        addnode: function ( e ) {
+                            console.log(e);
+                        }
+                    });
+                });
+            </script>
+
+            <style scoped>
+                .demo-section {
+                    width: 200px;
+                }
+
+                #treeview .k-sprite {
+                    background-image: url("../../content/web/treeview/coloricons-sprite.png");
+                }
+
+                .rootfolder { background-position: 0 0; }
+                .folder { background-position: 0 -16px; }
+                .pdf { background-position: 0 -32px; }
+                .html { background-position: 0 -48px; }
+                .image { background-position: 0 -64px; }
+
+            </style>
+        </div>
+
+</body>
+</html>
