@@ -12,12 +12,13 @@ We don't have an access to DOM objects to assign to them additional data.
 
 So I made callback with html string. It called when html string generated. You may want to change it.
 
-  addnode: function (htmlstring) {
-      //change htmlstring
-      //carefull with groups
+	addnode: function (htmlstring) {
+		//change htmlstring
+		//carefull with groups
 
-      return htmlstring
-  }
+		return htmlstring
+	}
+
 
 And added auto data-data insertion.
 
@@ -37,32 +38,31 @@ will be
 
 2. Create TreeView as usual, except the "data" attribute. Place to "data" all necessary data (usually an id, etc.)
 
-	<script>
-	    $(document).ready(function() {
-	        var tv = $("#treeview").kendoTreeView({
+	$(document).ready(function() {
+	    var tv = $("#treeview").kendoTreeView({
 
-	            dataSource: [
-	                {
-	                    data: {id: 'item-id', extra: 'extra-data'},
-	                    text: 'node #1'
-	                },
-	                {
-	                    text: 'node #2'
-	                }
-	            ],
+	        dataSource: [
+	            {
+	                data: {id: 'item-id', extra: 'extra-data'},
+	                text: 'node #1'
+	            },
+	            {
+	                text: 'node #2'
+	            }
+	        ],
 
 3. Catch the data by click with
 
-	            select: function(e) {
+            select: function(e) {
 
-	                if ($(e.node).data('data')) {
-	                    console.log($(e.node).data('data').id, $(e.node).data('data').extra);
-	                    alert("Node id: " + ($(e.node).data('data').id));
-	                }
-	            }
+                if ($(e.node).data('data')) {
+                    console.log($(e.node).data('data').id, $(e.node).data('data').extra);
+                    alert("Node id: " + ($(e.node).data('data').id));
+                }
+            }
 
-	        });
-	    });
-	</script>
+        });
+    });
+
 
 4. Thats all
