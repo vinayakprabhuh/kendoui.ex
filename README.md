@@ -12,14 +12,12 @@ We don't have an access to DOM objects to assign to them additional data.
 
 So I made callback with html string. It called when html string generated. You may want to change it.
 
-  ...
-      addnode: function (htmlstring) {
-          //change htmlstring
-          //carefull with groups
+  addnode: function (htmlstring) {
+      //change htmlstring
+      //carefull with groups
 
-          return htmlstring
-      }
-  ...
+      return htmlstring
+  }
 
 And added auto data-data insertion.
 
@@ -52,8 +50,6 @@ will be
 	                    text: 'node #2'
 	                }
 	            ],
-
-	...
 
 3. Catch the data by click with
 
