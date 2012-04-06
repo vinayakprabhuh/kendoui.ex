@@ -75,30 +75,31 @@ MenuEx allows you to create:
 - extra data assigned to menu node
 - addnode callback (envoked when html of node generated)
 
-## Auto data-data insertion
+### Auto data-data insertion
 
 		{text: 'text', data: {id:5}}
 
 will be
+
 		<li class='...' data-data='{id:5}'>text</li>
 
-## Node click callback
+### Node click callback
 
 		{text: 'text', click: 'alert(this)' }
 
-## addnode callback
+### addnode callback
 		
 		addnode: function ( e ) {
 			console.log(e);
 		}
 
-## All extra options
+### All extra options
 
 - anchor - selector to elements menu will be linked
 - event  - jQuery event triggers context menu (default: 'contexmenu')
 - delay  - delay before menu will hide
 
-## Example
+### Example
 
 		$(document).ready(function()  {
 			$('#testMenu').kendoMenuEx({
