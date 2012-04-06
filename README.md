@@ -4,7 +4,7 @@ Here, I tried to extend Awesome Kendo UI with missed functionality.
 
 ## Kendo UI TreeView Ex
 
-Kendo UI has TreeView widget. This widget doesn’t has an ability to link extra data to tree node (usefull when you click it). O_O. 
+Kendo UI has TreeView widget. This widget doesnâ€™t has an ability to link extra data to tree node (usefull when you click it). O_O. 
 I tried to correct it a little bit. Works only with TreeViews with dataSource.
 
 Treeview generates html code of all items of dataSource and then inserts it to wrapper object by jQuery.html().
@@ -61,6 +61,7 @@ will be
 3. Catch the data by click with
 
             select: function(e) {
+<<<<<<< HEAD
 
                 if ($(e.node).data('data')) {
                     console.log($(e.node).data('data').id, $(e.node).data('data').extra);
@@ -83,6 +84,14 @@ MenuEx allows you to create:
 		{text: 'text', data: {id:5}}
 
 will be
+=======
+
+                if ($(e.node).data('data')) {
+                    console.log($(e.node).data('data').id, $(e.node).data('data').extra);
+                    alert("Node id: " + ($(e.node).data('data').id));
+                }
+            }
+>>>>>>> e6714c0a17f4b0ed5f6bd6643905bf86fcc30a7a
 
 		<li class='...' data-data='{id:5}'>text</li>
 
