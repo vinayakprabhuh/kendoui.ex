@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>KendoUI Context Menu</title>
+    <script type="text/javascript" src="../../../js/jquery-1.7.2.js"></script>
+    <script type="text/javascript" src="../../../js/kendo.web.min.js"></script>
+    <script type="text/javascript" src="../../../js/treeview.ex/jquery.json-2.3.min.js"></script>
+    <script type="text/javascript" src="../../../js/menu.ex/kendo.menu.ex.js"></script>
+
+
+    <link href="../../../styles/kendo.common.min.css" rel="stylesheet" />
+    <link href="../../../styles/kendo.default.min.css" rel="stylesheet" />
+
+    <link href="../../../js/menu.ex/kendo.menu.ex.css" rel="stylesheet" />
+
+</head>
+
+
+<body>
+    <a href="../index.html">Back</a>
+	<p>A simple KendoUI compatible context menu<br><br></p>
+
+	<span id="mySpan" class="menu">Click here</span>
+	<div id="myButton" class="k-button menu">or here</div><br><br><br>
+
+	<div id="testMenu"></div>
+
+<script>
+
+    function showalert( el ) {
+        alert($(el).data('data').id);
+    }
+
+    $(document).ready(function()  {
+        var cm = $('#testMenu').kendoMenuEx({
+            dataSource: [
+                {
+                    text: 'item #1',
+                    imageUrl: "../../content/shared/icons/sports/baseball.png",
+                    data: {id: 5, extra: 'extradata'},
+                    click: 'showalert(this)'
+                },
+                {text: 'item #2', imageUrl: "../../content/shared/icons/sports/golf.png"},
+                {text: 'item #3', imageUrl: "../../content/shared/icons/sports/swimming.png",
+                    items: [
+                        {text: 'item #31', imageUrl: "../../content/shared/icons/16/video.png"},
+                        {text: 'item #32', imageUrl: "../../content/shared/icons/16/photo.png"}
+                    ]
+                },
+            ],
+            select: function(el) {
+                console.log(el);
+            },
+            orientation: 'vertical',
+            anchor: '#mySpan, #myButton',
+            delay: 1500
+        });
+    });
+</script>
+
+</body>
