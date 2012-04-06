@@ -41,8 +41,6 @@ will be
 
 2. Create TreeView as usual, except the "data" attribute. Place to "data" all necessary data (usually an id, etc.)
 
-	
-
 		$(document).ready(function() {
 	
 			var tv = $("#treeview").kendoTreeView({
@@ -61,8 +59,6 @@ will be
 3. Catch the data by click with
 
             select: function(e) {
-<<<<<<< HEAD
-
                 if ($(e.node).data('data')) {
                     console.log($(e.node).data('data').id, $(e.node).data('data').extra);
                     alert("Node id: " + ($(e.node).data('data').id));
@@ -79,20 +75,11 @@ MenuEx allows you to create:
 - extra data assigned to menu node
 - addnode callback (envoked when html of node generated)
 
-## Auto data-data insertion.
+## Auto data-data insertion
 
 		{text: 'text', data: {id:5}}
 
 will be
-=======
-
-                if ($(e.node).data('data')) {
-                    console.log($(e.node).data('data').id, $(e.node).data('data').extra);
-                    alert("Node id: " + ($(e.node).data('data').id));
-                }
-            }
->>>>>>> e6714c0a17f4b0ed5f6bd6643905bf86fcc30a7a
-
 		<li class='...' data-data='{id:5}'>text</li>
 
 ## Node click callback
