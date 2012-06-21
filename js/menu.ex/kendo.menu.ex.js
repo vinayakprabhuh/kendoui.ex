@@ -69,14 +69,17 @@
         var injects = "";
 
         if (a.item.data) {
+
             injects = " data-data='" + $.toJSON(a.item.data) + "'";
         }
 
         if (a.item.click) {
+
             injects += " onclick='" + a.item.click + "'";
         }
 
         if (injects.length > 0) {
+
             var re = /(<li)([^>]*>.*)/;
             var m = re.exec(r);
 
@@ -84,6 +87,7 @@
         }
 
         if (typeof this.arguments[1].addnode == 'function') {
+
             this.arguments[1].addnode(r);
         }
 
@@ -98,17 +102,21 @@
 
         var hiding = false;
 
+        var showing = false;
+
         this.addClass('k-context-menu');
 
         kendomenu.closeex = function () {
-            kendomenu.fadeOut(function() { hiding = false; });
+
+            kendomenu.fadeOut(function() { hiding = false; showing = false; });
         };
 
         kendomenu.openex = function (anchor, e) {
+
             if (hiding == false) {
-                console.log(e);
+
                 kendomenu.css({'top': e.pageY, 'left': e.pageX});
-                kendomenu.fadeIn();
+                kendomenu.fadeIn(function(){ showing = true; });
             }
         }
 
@@ -117,16 +125,29 @@
             event = options.event || 'contextmenu'
 
             $(options.anchor).bind(event, function(e){
+
                 kendomenu.openex(options.anchor, e);
                 return false;
             });
 
             this.bind('mouseleave', function() {
+
                 hiding = true;
                 delay = options.delay || 1000;
                 setTimeout(function(){ kendomenu.closeex() }, delay);
             });
         }
+
+        $('body').click(function(e) {
+
+            if (showing) {
+
+                if (! e.target.hasClass('k-link')) {
+
+                    kendomenu.closeex();
+                }
+            }
+        })
 
         return this;
     };
