@@ -106,7 +106,8 @@
 
         kendomenu.openex = function (anchor, e) {
             if (hiding == false) {
-                kendomenu.css({'top': e.clientY, 'left': e.clientX});
+                console.log(e);
+                kendomenu.css({'top': e.pageY, 'left': e.pageX});
                 kendomenu.fadeIn();
             }
         }
@@ -126,6 +127,8 @@
                 setTimeout(function(){ kendomenu.closeex() }, delay);
             });
         }
+
+        return this;
     };
 
 })(jQuery);

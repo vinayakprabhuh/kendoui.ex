@@ -47,12 +47,27 @@
 
         }
 
-        if (typeof this.arguments[1].addnode == 'function') {
+        if (this.arguments && typeof this.arguments[1].addnode == 'function') {
             this.arguments[1].addnode(r);
         }
 
         return r;
 
+    }
+
+    window.kendo.ui.TreeView.fn.update = function ( dataSource ) {
+
+        this.root.empty();
+
+        this.element.html(window.kendo.ui.TreeView.renderGroup({
+				items: dataSource,
+				group: {
+					firstLevel: true,
+					expanded: true
+				},
+				treeview: this.options
+            })
+        );
     }
 
 })(jQuery)
