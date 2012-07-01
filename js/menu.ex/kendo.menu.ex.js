@@ -73,11 +73,6 @@
             injects = " data-data='" + $.toJSON(a.item.data) + "'";
         }
 
-        if (a.item.click) {
-
-            injects += " onclick='" + a.item.click + "'";
-        }
-
         if (injects.length > 0) {
 
             var re = /(<li)([^>]*>.*)/;
@@ -86,14 +81,9 @@
             r = m[1] + injects + m[2];
         }
 
-        if (typeof this.arguments[1].addnode == 'function') {
-
-            this.arguments[1].addnode(r);
-        }
-
         return r;
 
-    }
+    };
 
 
     $.fn.kendoMenuEx = function(options){
@@ -108,7 +98,15 @@
 
         kendomenu.closeex = function () {
 
-            kendomenu.fadeOut(function() { hiding = false; showing = false; });
+            if (showing) {
+
+                hiding = true;
+                kendomenu.fadeOut(function() {
+
+                    hiding = false;
+                    showing = false;
+                });
+            }
         };
 
         kendomenu.openex = function (anchor, e) {
@@ -132,7 +130,6 @@
 
             this.bind('mouseleave', function() {
 
-                hiding = true;
                 delay = options.delay || 1000;
                 setTimeout(function(){ kendomenu.closeex() }, delay);
             });
@@ -140,14 +137,22 @@
 
         $('body').click(function(e) {
 
-            if (showing) {
-
-                if (! e.target.hasClass('k-link')) {
-
-                    kendomenu.closeex();
-                }
-            }
+            kendomenu.closeex();
         })
+
+        var items = this.find('.k-item');
+
+        options.dataSource.each( function(el, i) {
+
+            if (el.click != undefined) {
+
+                jQuery(items[i]).click( function(e) {
+
+                    el.click.call();
+                });
+            }
+        });
+
 
         return this;
     };
