@@ -59,102 +59,122 @@
  *
  */
 
-(function( $ ){
+(function( $, undefined ){
 
     var parent = window.kendo.ui.Menu.renderItem;
 
-    window.kendo.ui.Menu.renderItem = function ( a ) {
+    $.extend(window.kendo.ui.Menu, {
 
-        var r = parent(a);
-        var injects = "";
+        renderItem: function ( options ) {
 
-        if (a.item.data) {
+            var r = parent(options);
+            var injects = "";
 
-            injects = " data-data='" + $.toJSON(a.item.data) + "'";
+            if (options.item.data) {
+
+                injects = " data-data='" + JSON.stringify(options.item.data) + "'";
+            }
+
+            if (injects.length > 0) {
+
+                var re = /(<li)([^>]*>.*)/;
+                var m = re.exec(r);
+
+                r = m[1] + injects + m[2];
+            }
+
+            return r;
         }
+    });
 
-        if (injects.length > 0) {
+    var hiding = false;
+    var showing = false;
+    var kendomenu;
 
-            var re = /(<li)([^>]*>.*)/;
-            var m = re.exec(r);
+    var MenuEx = window.kendo.ui.Menu.extend({/** @lends kendo.ui.Menu.prototype */
 
-            r = m[1] + injects + m[2];
-        }
+        options: {
+            name: "MenuEx",
+            delay: 1000,
+            event: 'contextmenu',
+            orientation: 'vertical'
+        },
 
-        return r;
+        init: function(element, options) {
 
-    };
+            var that = this;
 
+            window.kendo.ui.Menu.fn.init.call(that, element, options);
 
-    $.fn.kendoMenuEx = function(options){
+            that.element.addClass('k-context-menu');
 
-        var kendomenu = this.kendoMenu(options);
+            if (options.anchor){
 
-        var hiding = false;
+                event = options.event || that.options.event;
 
-        var showing = false;
+                $(options.anchor).bind(event, function(e){
 
-        this.addClass('k-context-menu');
+                    that.show(options.anchor, e);
+                    return false;
+                });
 
-        kendomenu.closeex = function () {
+                this.bind('mouseleave', function() {
+
+                    delay = options.delay || that.options.delay;
+                    setTimeout(function(){ that.hide() }, delay);
+                });
+            }
+
+            $(document).click($.proxy( that._documentClick, that ));
+
+            var items = that.element.find('.k-item');
+
+            $.each(options.dataSource, function(i, el) {
+
+                if (el.click != undefined) {
+
+                    jQuery(items[i]).click( function(e) {
+
+                        el.click.call(kendomenu, e);
+                    });
+                }
+            });
+        },
+
+        hide: function () {
 
             if (showing) {
 
                 hiding = true;
-                kendomenu.fadeOut(function() {
+                this.element.fadeOut(function() {
 
                     hiding = false;
                     showing = false;
                 });
             }
-        };
+        },
 
-        kendomenu.openex = function (anchor, e) {
+        show: function (anchor, e) {
 
             if (hiding == false) {
 
-                kendomenu.css({'top': e.pageY, 'left': e.pageX});
-                kendomenu.fadeIn(function(){ showing = true; });
+                this.element.css({'top': e.pageY, 'left': e.pageX});
+                this.element.fadeIn(function(){ showing = true; });
             }
+        },
+
+        select: function() {
+
+            return kendomenu.select();
+        },
+
+       _documentClick: function (e) {
+
+            var that = this;
+            that.hide();
         }
+    });
 
-        if (options.anchor){
-
-            event = options.event || 'contextmenu'
-
-            $(options.anchor).bind(event, function(e){
-
-                kendomenu.openex(options.anchor, e);
-                return false;
-            });
-
-            this.bind('mouseleave', function() {
-
-                delay = options.delay || 1000;
-                setTimeout(function(){ kendomenu.closeex() }, delay);
-            });
-        }
-
-        $('body').click(function(e) {
-
-            kendomenu.closeex();
-        })
-
-        var items = this.find('.k-item');
-
-        options.dataSource.each( function(el, i) {
-
-            if (el.click != undefined) {
-
-                jQuery(items[i]).click( function(e) {
-
-                    el.click.call();
-                });
-            }
-        });
-
-
-        return this;
-    };
+    window.kendo.ui.plugin(MenuEx);
 
 })(jQuery);
