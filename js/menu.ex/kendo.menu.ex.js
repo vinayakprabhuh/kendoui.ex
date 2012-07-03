@@ -135,7 +135,7 @@
 
                     jQuery(items[i]).click( function(e) {
 
-                        el.click.call(kendomenu, e);
+                        el.click.call($(e.target).parents('li'), e);
                     });
                 }
             });
