@@ -36,7 +36,6 @@ will be
 		<script type="text/javascript" src="../../../js/jquery-1.7.2.js"></script>
 		<script type="text/javascript" src="../../../js/kendo.web.min.js"></script>
 
-		<script type="text/javascript" src="../../../js/treeview.ex/jquery.json-2.3.min.js"></script>
 		<script type="text/javascript" src="../../../js/treeview.ex/kendo.treeview.ex.js"></script>
 
 2. Create TreeView as usual, except the "data" attribute. Place to "data" all necessary data (usually an id, etc.)
@@ -48,7 +47,8 @@ will be
 			dataSource: [
 				{
 					data: {id: 'item-id', extra: 'extra-data'},
-					text: 'node #1'
+					text: 'node #1',
+					id: 'item-id'
 				},
 				{
 					text: 'node #2'
@@ -73,11 +73,13 @@ MenuEx allows you to create:
 - context menus
 - hook to click event of menu node
 - extra data assigned to menu node
-- addnode callback (envoked when html of node generated)
 
 ### Auto data-data insertion
 
-		{text: 'text', data: {id:5}}
+		{
+		    text: 'text',
+		    data: {id:5}
+		}
 
 will be
 
@@ -85,12 +87,13 @@ will be
 
 ### Node click callback
 
-		{text: 'text', click: 'alert(this)' }
+		{
+		    text: 'text',
+		    data: {id:5},
+            click: function (event) {
 
-### addnode callback
-		
-		addnode: function ( e ) {
-			console.log(e);
+                alert("this item id: " + this.data('data').id);
+            }
 		}
 
 ### All extra options
@@ -108,15 +111,12 @@ will be
 					text: 'item #1',
 					imageUrl: "../../content/shared/icons/sports/baseball.png",
 					data: {id: 5, extra: 'extradata'},
-					click: 'showalert(this)'
+                    click: function (event) {
+
+                        alert("this item id: " + this.data('data').id);
+                    }
 				}
 			],
-			select: function(el) {
-				console.log(el);
-			},
-			orientation: 'vertical',
-			anchor: '#mySpan, #myButton',
-			delay: 1500,
-			addnode: function(el) { console.log(el); }
+			anchor: '#myDiv, #myTree li'
 		});
 	});
