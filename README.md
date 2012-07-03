@@ -100,7 +100,7 @@ will be
 
 - anchor - selector to elements menu will be linked
 - event  - jQuery event triggers context menu (default: 'contexmenu')
-- delay  - delay before menu will hide
+- delay  - delay before menu will hide (default: 1000)
 
 ### Example
 
@@ -115,8 +115,9 @@ will be
 
                         alert("this item id: " + this.data('data').id);
                     }
-				}
-			],
-			anchor: '#myDiv, #myTree li'
-		});
-	});
+				}],
+                anchor: '#myDiv, #myTree li',
+                delay: 1500,
+                event: 'contextmenu'
+		    });
+	    });
