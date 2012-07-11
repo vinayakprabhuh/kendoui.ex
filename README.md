@@ -121,3 +121,35 @@ will be
                 event: 'contextmenu'
 		    });
 	    });
+
+
+## Kendo UI Sidebar
+
+Sidebar allows you to create sidebar docked to screen edge. Based on Menu.
+
+### Example
+
+        $(function()  {
+                var cm = $('#sidebar').kendoSidebar({
+                dataSource: [
+                    {
+                        text: 'item #1',
+                        imageUrl: "../../content/shared/icons/sports/baseball.png",
+                        data: {id: 5, extra: 'extradata'},
+                        click: function (e) {
+
+                            alert("this item id: " + this.data('data').id);
+                        }
+                    },
+                    {text: 'item #2', imageUrl: "../../content/shared/icons/sports/golf.png"},
+                    {text: 'item #3', imageUrl: "../../content/shared/icons/sports/swimming.png",
+                        items: [
+                            {text: 'item #31', imageUrl: "../../content/shared/icons/16/video.png"},
+                            {text: 'item #32', imageUrl: "../../content/shared/icons/16/photo.png"}
+                        ]
+                    }
+                ],
+                orientation: 'horizontal',
+                position: ['center', 'bottom'] // [[left, center, right], [top, center, bottom]]
+            });
+        });

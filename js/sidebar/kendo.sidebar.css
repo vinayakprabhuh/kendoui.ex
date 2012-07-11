@@ -1,0 +1,13 @@
+.k-sidebar
+{
+    display: inline-block;
+    position: fixed;
+    z-index: 3000;
+}
+
+
+.k-sidebar .k-last
+{
+    margin-right: 0px;
+    border-right: none;
+}

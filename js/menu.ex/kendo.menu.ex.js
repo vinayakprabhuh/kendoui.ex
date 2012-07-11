@@ -89,7 +89,6 @@
 
     var hiding = false;
     var showing = false;
-    var kendomenu;
 
     var MenuEx = window.kendo.ui.Menu.extend({/** @lends kendo.ui.Menu.prototype */
 
@@ -161,11 +160,6 @@
                 this.element.css({'top': e.pageY, 'left': e.pageX});
                 this.element.fadeIn(function(){ showing = true; });
             }
-        },
-
-        select: function() {
-
-            return kendomenu.select();
         },
 
        _documentClick: function (e) {
