@@ -9,5 +9,5 @@
 .k-sidebar .k-last
 {
     margin-right: 0px;
-    border-right: none;
+    border-right: none !important;
 }
