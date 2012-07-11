@@ -212,7 +212,7 @@
             }
             else if(position[1] == 'bottom') {
 
-                this.element.css('bottom', 0);
+                this.element.css('top', $(document).height() - this.element.height());
             }
             else if (position[1] == 'center') {
 

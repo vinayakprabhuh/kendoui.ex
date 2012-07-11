@@ -153,3 +153,7 @@ Sidebar allows you to create sidebar docked to screen edge. Based on Menu.
                 position: ['center', 'bottom'] // [[left, center, right], [top, center, bottom]]
             });
         });
+
+### License
+Copyright (c) 2011-2012, Constantine Zykov
+Dual licensed under the [MIT license](https://github.com/insanio/kendoui.ex/blob/master/MIT-license.txt) and [GPL license](https://github.com/insanio/kendoui.ex/blob/master/GPL-license.txt).
