@@ -7,7 +7,7 @@
     <script type="text/javascript" src="../../../js/kendo.web.min.js"></script>
     <script type="text/javascript" src="../../../js/menu.ex/kendo.menu.ex.js"></script>
 
-
+    <link href="../../content/shared/styles/examples-offline.css" rel="stylesheet">
     <link href="../../../styles/kendo.common.min.css" rel="stylesheet" />
     <link href="../../../styles/kendo.default.min.css" rel="stylesheet" />
 
@@ -17,13 +17,14 @@
 
 
 <body>
-    <a href="../index.html">Back</a>
+    <a class="offline-button" href="../index.html">Back</a>
 	<p>A simple KendoUI compatible context menu.<br><br></p>
-
     <p>Click on "Item #1" to check out data binding.<br><br></p>
 
-	<span id="mySpan" class="menu">Click here right mouse button</span>
-	<div id="myButton" class="k-button menu">or here</div><br><br><br>
+    <div id="example" class="k-content">
+	    <span id="mySpan" class="menu">Click here right mouse button</span>
+	    <div id="myButton" class="k-button menu">or here</div><br><br><br>
+    </div>
 
 	<div id="testMenu"></div>
 <script>
@@ -37,7 +38,7 @@
                     data: {id: 5, extra: 'extradata'},
                     click: function (e) {
 
-                    	alert("this item id: " + this.data('data').id);
+                    	alert("this item id: " + this.item.data('data').id);
                 	}
                 },
                 {text: 'item #2', imageUrl: "../../content/shared/icons/sports/golf.png"},

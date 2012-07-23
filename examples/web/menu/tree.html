@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>KendoUI Context Menu width TreeView</title>
+    <script type="text/javascript" src="../../../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../../../js/kendo.web.min.js"></script>
+
+    <script type="text/javascript" src="../../../js/menu.ex/kendo.menu.ex.js"></script>
+
+    <link href="../../content/shared/styles/examples-offline.css" rel="stylesheet">
+    <link href="../../../styles/kendo.common.min.css" rel="stylesheet" />
+    <link href="../../../styles/kendo.default.min.css" rel="stylesheet" />
+
+    <link href="../../../js/menu.ex/kendo.menu.ex.css" rel="stylesheet" />
+</head>
+
+
+<body>
+<a class="offline-button" href="../index.html">Back</a>
+<p>Right click on tree item to check context menu.<br><br></p>
+<div id="example" class="k-content">
+    <div id="myTree"></div>
+
+    <div id="contextMenu"></div>
+</div>
+<script>
+    $(function()  {
+
+        var tv = $("#myTree").kendoTreeView({
+
+            dataSource: [
+                {
+                    data: {id: '1', properties: 'properties #1'},
+                    text: 'node #1'
+                    //id: 'item-id'
+                },
+                {
+                    data: {id: '2', properties: 'properties #2'},
+                    text: 'node #2',
+                    selected: true
+                },
+                {
+                    data: {id: '3', properties: 'properties #3'},
+                    text: 'node #3',
+                    items: [
+                        {
+                            data: {id: '31', properties: 'properties #31'},
+                            text: 'sub-node #31'
+                        }
+                    ]
+                }
+            ],
+
+            select: function(e) {
+
+                if (this.dataItem(e.node).data) {
+
+                    console.log(this.dataItem(e.node).data.id, this.dataItem(e.node).data.extra);
+                    alert("Node id: " + (this.dataItem(e.node).data.id));
+                }
+            }
+        });
+
+
+        var cm = $('#contextMenu').kendoMenuEx({
+            dataSource: [
+                {
+                    text: 'Properties',
+                    click: function (event) {
+
+                        console.log(event);
+                        alert("Tree item data.\r\nid: " + tv.data('kendoTreeView').dataItem(this.target).data.id + "\r\nproperties: " + tv.data('kendoTreeView').dataItem(this.target).data.properties);
+                    }
+                }
+            ],
+            anchor: '#myTree li',
+            delay: 1500
+        });
+    });
+</script>
+
+</body>

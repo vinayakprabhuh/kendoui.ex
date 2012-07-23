@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>KendoUI Vertical Menu</title>
+    <link href="../../content/shared/styles/examples-offline.css" rel="stylesheet">
+    <link href="../../../styles/kendo.common.min.css" rel="stylesheet">
+    <link href="../../../styles/kendo.default.min.css" rel="stylesheet">
+
+    <script src="../../../js/jquery.min.js"></script>
+    <script src="../../../js/kendo.web.min.js"></script>
+    <script src="../../content/shared/js/console.js"></script>
+
+</head>
+
+
+<body>
+<a class="offline-button" href="../index.html">Back</a>
+<p>Vertical menu example</p>
+
+<div id="example" class="k-content">
+    <div id="menu"></div>
+    <p><br/><br/><br/><br/></p>
+    <ul id="menu-2"></ul>
+</div>
+
+<script>
+    $(function()  {
+
+        var m = $('#menu, #menu-2').kendoMenu({
+
+            dataSource: [
+                {
+                    text: "Baseball", imageUrl: "../../content/shared/icons/sports/baseball.png",
+                    items: [
+                        { text: "Top News", imageUrl: "../../content/shared/icons/16/star.png" },
+                        { text: "Photo Galleries", imageUrl: "../../content/shared/icons/16/photo.png" },
+                        { text: "Videos Records", imageUrl: "../../content/shared/icons/16/video.png" },
+                        { text: "Radio Records", imageUrl: "../../content/shared/icons/16/speaker.png" }
+                    ]
+                },
+                {
+                    text: "Golf", imageUrl: "../../content/shared/icons/sports/golf.png",
+                    items: [
+                        { text: "Top News", imageUrl: "../../content/shared/icons/16/star.png" },
+                        { text: "Photo Galleries", imageUrl: "../../content/shared/icons/16/photo.png" },
+                        { text: "Videos Records", imageUrl: "../../content/shared/icons/16/video.png" },
+                        { text: "Radio Records", imageUrl: "../../content/shared/icons/16/speaker.png" }
+                    ]
+                },
+                {
+                    text: "Swimming", imageUrl: "../../content/shared/icons/sports/swimming.png",
+                    items: [
+                        { text: "Top News", imageUrl: "../../content/shared/icons/16/star.png" },
+                        { text: "Photo Galleries", imageUrl: "../../content/shared/icons/16/photo.png" }
+                    ]
+                },
+                {
+                    text: "Snowboarding", imageUrl: "../../content/shared/icons/sports/snowboarding.png",
+                    items: [
+                        { text: "Photo Galleries", imageUrl: "../../content/shared/icons/16/photo.png" },
+                        { text: "Videos Records", imageUrl: "../../content/shared/icons/16/video.png" }
+                    ]
+                }
+            ],
+            orientation: 'vertical'
+        });
+    });
+</script>
+
+<style>
+    #menu-2, #menu
+    {
+        width: 300px;
+    }
+
+</style>
+
+</body>

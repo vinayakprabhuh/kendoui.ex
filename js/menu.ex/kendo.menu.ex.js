@@ -92,6 +92,15 @@
 
     var MenuEx = window.kendo.ui.Menu.extend({/** @lends kendo.ui.Menu.prototype */
 
+        /**
+         * target object which was clicked
+         */
+        target: {},
+        /**
+         * menu item which was clicked
+         */
+        item: {},
+
         options: {
             name: "MenuEx",
             delay: 1000,
@@ -134,7 +143,9 @@
 
                     jQuery(items[i]).click( function(e) {
 
-                        el.click.call($(e.target).parents('li'), e);
+                        //el.click.call($(e.target).parents('li'), e);
+                        that.item = $(e.target).parents('li');
+                        el.click.call(that, e);
                     });
                 }
             });
@@ -145,6 +156,11 @@
             if (showing) {
 
                 hiding = true;
+                var $target = $(this.target);
+                if ($target.hasClass('k-item')) {
+
+                    $target.find('.k-in').removeClass('k-state-focused');
+                }
                 this.element.fadeOut(function() {
 
                     hiding = false;
@@ -157,6 +173,12 @@
 
             if (hiding == false) {
 
+                this.target = e.currentTarget;
+                var $target = $(this.target);
+                if ($target.hasClass('k-item')) {
+
+                    $target.find('.k-in').addClass('k-state-focused');
+                }
                 this.element.css({'top': e.pageY, 'left': e.pageX});
                 this.element.fadeIn(function(){ showing = true; });
             }
