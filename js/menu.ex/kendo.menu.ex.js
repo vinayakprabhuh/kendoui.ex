@@ -120,11 +120,12 @@
 
                 event = options.event || that.options.event;
 
-                $(options.anchor).bind(event, function(e){
-
-                    that.show(options.anchor, e);
-                    return false;
-                });
+                $(document).ready(function(){
+                    $(options.anchor).bind(event, function(e){
+                        that.show(options.anchor, e);
+                        return false;
+                    });
+                }); 
 
                 this.bind('mouseleave', function() {
 
