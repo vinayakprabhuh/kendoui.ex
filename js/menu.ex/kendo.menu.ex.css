@@ -13,3 +13,8 @@ div.k-menu-vertical > .k-item
     float: none;
     border-width: 0;
 }
+
+.k-context-menu .k-item > .k-link
+{
+    padding: 0.5em 1.3em 0.4em 0.9em;
+}

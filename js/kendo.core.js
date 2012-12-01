@@ -1,17 +1,14 @@
 /*
-* Kendo UI Web v2012.2.710 (http://kendoui.com)
+* Kendo UI Web v2012.3.1114 (http://kendoui.com)
 * Copyright 2012 Telerik AD. All rights reserved.
 *
-* Kendo UI Web commercial licenses may be obtained at http://kendoui.com/web-license
+* Kendo UI Web commercial licenses may be obtained at
+* https://www.kendoui.com/purchase/license-agreement/kendo-ui-web-commercial.aspx
 * If you do not own a commercial license, this file shall be governed by the
 * GNU General Public License (GPL) version 3.
 * For GPL requirements, please review: http://www.gnu.org/copyleft/gpl.html
 */
 ;(function($, undefined) {
-    /**
-     * @name kendo
-     * @namespace This object contains all code introduced by the Kendo project, plus helper functions that are used across all widgets.
-     */
     var kendo = window.kendo = window.kendo || {},
         extend = $.extend,
         each = $.each,
@@ -67,12 +64,7 @@
         return subclass;
     };
 
-    var Observable = Class.extend(/** @lends kendo.Observable.prototype */{
-        /**
-         * Creates an observable instance.
-         * @constructs
-         * @class Represents a class that can trigger events, along with methods that subscribe handlers to these events.
-         */
+    var Observable = Class.extend({
         init: function() {
             this._events = {};
         },
@@ -172,7 +164,9 @@
                 idx,
                 length;
 
-            if (events) {
+            if (eventName === undefined) {
+                that._events = {};
+            } else if (events) {
                 if (handler) {
                     for (idx = 0, length = events.length; idx < length; idx++) {
                         if (events[idx] === handler) {
@@ -188,55 +182,6 @@
         }
     });
 
-    /**
-     * @name kendo.Template.Description
-     *
-     * @section
-     * <p>
-     *  Templates offer way of creating HTML chunks. Options such as HTML encoding and compilation for optimal
-     *  performance are available.
-     * </p>
-     *
-     * @exampleTitle Basic template
-     * @example
-     * var inlineTemplate = kendo.template("Hello, #= firstName # #= lastName #");
-     * var inlineData = { firstName: "John", lastName: "Doe" };
-     * $("#inline").html(inlineTemplate(inlineData));
-     *
-     * @exampleTitle Output:
-     * @example
-     * Hello, John Doe!
-     *
-     * @exampleTitle Encode HTML
-     * @example
-     * var encodingTemplate = kendo.template("HTML tags are encoded as follows: #:html#");
-     * var encodingData = { html: "<strong>lorem ipsum</strong>" };
-     * $("#encoding").html(encodingTemplate(encodingData));
-     *
-     * @exampleTitle Output:
-     * @example
-     * HTML tags are encoded as follows: <strong>lorem ipsum</strong>
-     *
-     * @exampleTitle Use javascript in templates
-     * @example
-     * var encodingTemplate = kendo.template("#if (foo) {# bar #}#");
-     * var data = { foo: true};
-     * $("#encoding").html(encodingTemplate(data)); // outputs bar
-     *
-     * @exampleTitle Escape sharp symbols in JavaScript strings
-     * @example
-     * var encodingTemplate = kendo.template("<a href='\\#'>Link</a>");
-     *
-     * @exampleTitle Escape sharp symbols in script templates
-     * @example
-     * <script type="text/x-kendo-template" id="template">
-     *  <a href="\#">Link</a>
-     * </script>
-     *
-     * <script>
-     * var encodingTemplate = kendo.template($("#template").html());
-     * </script>
-     */
 
      function compilePart(part, stringPart) {
          if (stringPart) {
@@ -265,25 +210,12 @@
         escapedCurlyRegExp = /\\\}/g,
         curlyRegExp = /__CURLY__/g,
         escapedSharpRegExp = /\\#/g,
-        sharpRegExp = /__SHARP__/g;
+        sharpRegExp = /__SHARP__/g,
+        zeros = ["", "0", "00", "000", "0000"];
 
-    /**
-     * @name kendo.Template
-     * @namespace
-     */
-    Template = /** @lends kendo.Template */ {
+    Template = {
         paramName: "data", // name of the parameter of the generated template
         useWithBlock: true, // whether to wrap the template in a with() block
-        /**
-         * Renders a template for each item of the data.
-         * @ignore
-         * @name kendo.Template.render
-         * @static
-         * @function
-         * @param {String} [template] The template that will be rendered
-         * @param {Array} [data] Data items
-         * @returns {String} The rendered template
-         */
         render: function(template, data) {
             var idx,
                 length,
@@ -295,16 +227,6 @@
 
             return html;
         },
-        /**
-         * Compiles a template to a function that builds HTML. Useful when a template will be used several times.
-         * @ignore
-         * @name kendo.Template.compile
-         * @static
-         * @function
-         * @param {String} [template] The template that will be compiled
-         * @param {Object} [options] Compilation options
-         * @returns {Function} The compiled template
-         */
         compile: function(template, options) {
             var settings = extend({}, this, options),
                 paramName = settings.paramName,
@@ -353,8 +275,16 @@
         }
     };
 
-function pad(number) {
-    return number < 10 ? "0" + number : number;
+function pad(number, digits, end) {
+    number = number + "";
+    digits = digits || 2;
+    end = digits - number.length;
+
+    if (end) {
+        return zeros[digits].substring(0, end) + number;
+    }
+
+    return number;
 }
 
     //JSON stringify
@@ -376,20 +306,19 @@ function pad(number) {
 
     if (typeof Date.prototype.toJSON !== FUNCTION) {
 
-        /** @ignore */
         Date.prototype.toJSON = function (key) {
             var that = this;
 
             return isFinite(that.valueOf()) ?
-                that.getUTCFullYear()     + "-" +
-                pad(that.getUTCMonth() + 1) + "-" +
-                pad(that.getUTCDate())      + "T" +
-                pad(that.getUTCHours())     + ":" +
-                pad(that.getUTCMinutes())   + ":" +
-                pad(that.getUTCSeconds())   + "Z" : null;
+                pad(that.getUTCFullYear(), 4) + "-" +
+                pad(that.getUTCMonth() + 1)   + "-" +
+                pad(that.getUTCDate())        + "T" +
+                pad(that.getUTCHours())       + ":" +
+                pad(that.getUTCMinutes())     + ":" +
+                pad(that.getUTCSeconds())     + "Z" : null;
         };
 
-        String.prototype.toJSON = Number.prototype.toJSON = /** @ignore */ Boolean.prototype.toJSON = function (key) {
+        String.prototype.toJSON = Number.prototype.toJSON = Boolean.prototype.toJSON = function (key) {
             return this.valueOf();
         };
     }
@@ -575,355 +504,6 @@ function pad(number) {
         }
     }};
 
-    /**
-     * @name kendo.Globalization
-     * @namespace
-     */
-     /**
-     * @name kendo.Globalization.Description
-     *
-     * @section Globalization is the process of designing and developing an
-     * application that works in multiple cultures. The culture defines specific information
-     * for the number formats, week and month names, date and time formats and etc.
-     *
-     * @section Kendo exposes <strong><em>culture(cultureName)</em></strong> method which allows to select the culture
-     * script corresponding to the "culture name". kendo.culture() method uses the passed culture name
-     * to select a culture from the culture scripts that you have included and then sets the current culture. If there is no
-     * corresponding culture then the method will try to find culture which is equal to the country part of the culture name.
-     * If no culture is found the default one is used.
-     *
-     * <h3>Define current culture settings</h3>
-     *
-     * @exampleTitle Include culture scripts and select culture
-     * @example
-     *
-     * <script src="jquery.js" ></script>
-     * <script src="kendo.all.min.js"></script>
-     * <script src="kendo.culture.en-GB.js"></script>
-     * <script type="text/javascript">
-     *    //set current culture to the "en-GB" culture script.
-     *    kendo.culture("en-GB");
-     * </script>
-     *
-     * @exampleTitle Select closest culture
-     * @example
-     *
-     * <script src="jquery.js" ></script>
-     * <script src="kendo.all.min.js"></script>
-     * <script src="kendo.culture.fr.js"></script>
-     * <script type="text/javascript">
-     *    //set current culture to the "fr" culture script.
-     *    kendo.culture("fr-FR");
-     * </script>
-     *
-     * @exampleTitle Get current culture
-     * @example
-     * var cultureInfo = kendo.culture();
-     *
-     * <h3>Find culture object</h3>
-     *
-     * @section Kendo also exposes <strong><em>findCulture(cultureName)</em></strong> method which returns a culture object which corresponds to
-     * the passed culture name. If there is no such culture in the registered culture scripts, the method will try to find a culture object
-     * which corresponds to the country part of the culture name. If no culture is found, the result will be <strong>null</strong>.
-     *
-     * @exampleTitle Find a culture object
-     * @example
-     *
-     * <script src="jquery.js" ></script>
-     * <script src="kendo.all.min.js"></script>
-     * <script src="kendo.culture.fr.js"></script>
-     * <script type="text/javascript">
-     *    //finds the "fr-FR" culture object.
-     *    var culture = kendo.findCulture("fr-FR");
-     * </script>
-     *
-     * @section
-     * <h3>Format number or date object</h3>
-     *
-     * Kendo exposes methods which can format number or date object using specific format string and the current specified culture:
-     * @section
-     * <h4><code>kendo.toString(object, format)</code> - returns a string representation of the current object using specific format.</h4>
-     * @exampleTitle Formats number and date objects
-     * @example
-     * //format number using standard number format
-     * kendo.toString(10.12, "n"); //10.12
-     * kendo.toString(10.12, "n0"); //10
-     * kendo.toString(10.12, "n5"); //10.12000
-     * kendo.toString(10.12, "c"); //$10.12
-     * kendo.toString(0.12, "p"); //12.00 %
-     * //format number using custom number format
-     * kendo.toString(19.12, "00##"); //0019
-     * //format date
-     * kendo.toString(new Date(2010, 9, 5), "yyyy/MM/dd" ); // "2010/10/05"
-     * kendo.toString(new Date(2010, 9, 5), "dddd MMMM d, yyyy" ); // "Tuesday October 5, 2010"
-     * kendo.toString(new Date(2010, 10, 10, 22, 12), "hh:mm tt" ); // "10:12 PM"
-     *
-     * @section
-     * <h4>kendo.format - replaces each format item in a specified string with the text equivalent of a corresponding object's value.</h4>
-     *  @exampleTitle String format
-     *  @example
-     *  kendo.format("{0} - {1}", 12, 24); //12 - 24
-     *  kendo.format("{0:c} - {1:c}", 12, 24); //$12.00 - $24.00
-     *
-     * @section
-     * <h3>Parsing a string</h3>
-     *
-     * Kendo exposes methods which converts the specified string to date or number object:
-     * <ol>
-     *    <li>
-     *       <code>kendo.parseInt(string, [culture])</code> - converts a string to a whole number using the specified culture (current culture by default).
-     *        @exampleTitle Parse string to integer
-     *        @example
-     *
-     *        //assumes that current culture defines decimal separator as "."
-     *        kendo.parseInt("12.22"); //12
-     *
-     *        //assumes that current culture defines decimal separator as ",", group separator as "." and currency symbol as "€"
-     *        kendo.parseInt("1.212,22 €"); //1212
-     *    </li>
-     *    <li>
-     *       <code>kendo.parseFloat(string, [culture])</code> - converts a string to a number with floating point using the specified culture (current culture by default).
-     *        @exampleTitle Parse string to float
-     *        @example
-     *
-     *        //assumes that current culture defines decimal separator as "."
-     *        kendo.parseFloat("12.22"); //12.22
-     *
-     *        //assumes that current culture defines decimal separator as ",", group separator as "." and currency symbol as "€"
-     *        kendo.parseFloat("1.212,22 €"); //1212.22
-     *    </li>
-     *    <li>
-     *       <code>kendo.parseDate(string, [formats], [culture])</code> - converts a string to a JavaScript Date object, taking into account the given format/formats (or the given culture's set of default formats).
-     *       Current culture is used if one is not specified.
-     *        @exampleTitle Parse string to float
-     *        @example
-     *
-     *        //current culture is "en-US"
-     *        kendo.parseDate("12/22/2000"); //Fri Dec 22 2000
-     *        kendo.parseDate("2000/12/22", "yyyy/MM/dd"); //Fri Dec 22 2000
-     *    </li>
-     * </ol>
-     *
-     * @section
-     * <h3>Number formatting</h3>
-     * The purpose of number formatting is to convert Number object to a human readable string using culture's specific settings. <code>kendo.format</code> and <code>kendo.toString</code>
-     * methods support standard and custom numeric formats:
-     * <h4>Standard numeric formats</h4>
-     *<strong>n</strong> for number
-     *       @exampleTitle Formatting using "n" format
-     *       @example
-     *       kendo.culture("en-US");
-     *       kendo.toString(1234.567, "n"); //1,234.57
-     *
-     *       kendo.culture("de-DE");
-     *       kendo.toString(1234.567, "n3"); //1.234,567
-     *@section
-     *<strong>c</strong> for currency
-     *       @exampleTitle Formatting using "c" format
-     *       @example
-     *       kendo.culture("en-US");
-     *       kendo.toString(1234.567, "c"); //$1,234.57
-     *
-     *       kendo.culture("de-DE");
-     *       kendo.toString(1234.567, "c3"); //1.234,567 €
-     *@section
-     *<strong>p</strong> for percentage (number is multiplied by 100)
-     *       @exampleTitle Formatting using "p" format
-     *       @example
-     *       kendo.culture("en-US");
-     *       kendo.toString(0.222, "p"); //22.20 %
-     *
-     *       kendo.culture("de-DE");
-     *       kendo.toString(0.22, "p3"); //22.000 %
-     *@section
-     *<strong>e</strong> for exponential
-     *       @exampleTitle Formatting using "e" format
-     *       @example
-     *       kendo.toString(0.122, "e"); //1.22e-1
-     *       kendo.toString(0.122, "e4"); //1.2200e-1
-     *
-     * @section
-     * <h4>Custom numeric formats</h4>
-     * You can create custom numeric format string using one or more custom numeric specifiers. Custom numeric format string is any tha is not a standard numeric format.
-     * <div class="details-list">
-     *   <h4 class="details-title">Format specifiers</h4>
-     *   <dl>
-     *     <dt>
-     *       "0" - zero placeholder
-     *     </dt>
-     *     <dd>Replaces the zero with the corresponding digit if one is present; otherwise, zero appears in the result string - <code>kendo.toString(1234.5678, "00000") -> 01235</code></dd>
-     *     <dt>
-     *       "#" - digit placeholder
-     *     </dt>
-     *     <dd>Replaces the pound sign with the corresponding digit if one is present; otherwise, no digit appears in the result string - <code>kendo.toString(1234.5678, "#####") -> 1235</code></dd>
-     *     <dt>
-     *       "." - Decimal placeholder
-     *     </dt>
-     *     <dd>Determines the location of the decimal separator in the result string - <code>kendo.tostring(0.45678, "0.00") -> 0.46 </code>(en-us)</dd>
-     *     <dt>
-     *       "," - group separator placeholder
-     *     </dt>
-     *     <dd>Insert localized group separator between each group - <code>kendo.tostring(12345678, "##,#") -> 12,345,678</code>(en-us)</dd>
-     *     <dt>
-     *       "%" - percentage placeholder
-     *     </dt>
-     *     <dd>Multiplies a number by 100 and inserts a localized percentage symbol in the result string</dd>
-     *     <dt>
-     *       "e" - exponential notation
-     *     </dt>
-     *     <dd><code>kendo.toString(0.45678, "e0") -> 5e-1</code></dd>
-     *     <dt>
-     *       ";" - section separator
-     *     </dt>
-     *     <dd>Defines sections wih separate format strings for positive, negative, and zero numbers</dd>
-     *     <dt>
-     *       "string"/'string' - Literal string delimiter
-     *     </dt>
-     *     <dd>Indicates that the enclosed characters should be copied to the result string</dd>
-     *   </dl>
-     * </div>
-     *
-     * @section
-     * <h3>Date formatting</h3>
-     * The purpose of date formatting is to convert Date object to a human readable string using culture's specific settings. <code>kendo.format</code> and <code>kendo.toString</code>
-     * methods support standard and custom date formats:
-     * <h4>Standard date formats</h4>
-     * <div class="details-list">
-     *   <h4 class="details-title">Format specifiers</h4>
-     *   <dl>
-     *     <dt>
-     *       "d" - short date pattern
-     *     </dt>
-     *     <dd><code>kendo.toString(new Date(2000, 10, 6), "d") -> 11/6/2000</code></dd>
-     *     <dt>
-     *       "D" - long date pattern
-     *     </dt>
-     *     <dd><code>kendo.toString(new Date(2000, 10, 6), "D") -> Monday, November 06, 2000</code></dd>
-     *     <dt>
-     *       "F" - Full date/time pattern
-     *     </dt>
-     *     <dd><code>kendo.toString(new Date(2000, 10, 6), "D") -> Monday, November 06, 2000 12:00:00 AM</code></dd>
-     *     <dt>
-     *       "g" - General date/time pattern (short time)
-     *     </dt>
-     *     <dd><code>kendo.toString(new Date(2000, 10, 6), "g") -> 11/6/2000 12:00 AM</code></dd>
-     *     <dt>
-     *       "G" - General date/time pattern (long time)
-     *     </dt>
-     *     <dd><code>kendo.toString(new Date(2000, 10, 6), "G") -> 11/6/2000 12:00:00 AM</code></dd>
-     *     <dt>
-     *       "M/m" - Month/day pattern
-     *     </dt>
-     *     <dd><code>kendo.toString(new Date(2000, 10, 6), "m") -> November 06</code></dd>
-     *     <dt>
-     *       "u" - Universal sortable date/time pattern
-     *     </dt>
-     *     <dd><code>kendo.toString(new Date(2000, 10, 6), "u") -> 2000-11-06 00:00:00Z</code></dd>
-     *     <dt>
-     *       "Y/y" - Year/month pattern
-     *     </dt>
-     *     <dd><code>kendo.toString(new Date(2000, 10, 6), "y") -> November, 2000</code></dd>
-     *   </dl>
-     * </div>
-     *
-     *@section
-     * <h4>Custom date formats</h4>
-     * <div class="details-list">
-     *   <h4 class="details-title">Format specifiers</h4>
-     *   <dl>
-     *     <dt>
-     *       "d"
-     *     </dt>
-     *     <dd>The day of the month, from 1 through 31</dd>
-     *     <dt>
-     *       "dd"
-     *     </dt>
-     *     <dd>The day of the month, from 01 through 31.</dd>
-     *     <dt>
-     *       "ddd"
-     *     </dt>
-     *     <dd>iThe abbreviated name of the day of the week</dd>
-     *     <dt>
-     *       "dddd"
-     *     </dt>
-     *     <dd>The full name of the day of the week</dd>
-     *     <dt>
-     *       "f"
-     *     </dt>
-     *     <dd>The tenths of a second in a date and time value</dd>
-     *     <dt>
-     *       "ff"
-     *     </dt>
-     *     <dd>The hundredths of a second in a date and time value</dd>
-     *     <dt>
-     *       "fff"
-     *     </dt>
-     *     <dd>The milliseconds in a date and time value</dd>
-     *     <dt>
-     *       "M"
-     *     </dt>
-     *     <dd>The month, from 1 through 12</dd>
-     *     <dt>
-     *       "MM"
-     *     </dt>
-     *     <dd>The month, from 01 through 12</dd>
-     *     <dt>
-     *       "MMM"
-     *     </dt>
-     *     <dd>The abbreviated name of the month</dd>
-     *     <dt>
-     *       "MMMM"
-     *     </dt>
-     *     <dd>The full name of the month</dd>
-     *     <dt>
-     *       "h"
-     *     </dt>
-     *     <dd>The hour, using a 12-hour clock from 1 to 12</dd>
-     *     <dt>
-     *       "hh"
-     *     </dt>
-     *     <dd>The hour, using a 12-hour clock from 01 to 12</dd>
-     *     <dt>
-     *       "H"
-     *     </dt>
-     *     <dd>The hour, using a 24-hour clock from 1 to 23</dd>
-     *     <dt>
-     *       "HH"
-     *     </dt>
-     *     <dd>The hour, using a 24-hour clock from 01 to 23</dd>
-     *     <dt>
-     *       "m"
-     *     </dt>
-     *     <dd>The minute, from 0 through 59</dd>
-     *     <dt>
-     *       "mm"
-     *     </dt>
-     *     <dd>The minute, from 00 through 59</dd>
-     *     <dt>
-     *       "s"
-     *     </dt>
-     *     <dd>The second, from 0 through 59</dd>
-     *     <dt>
-     *       "ss"
-     *     </dt>
-     *     <dd>The second, from 00 through 59</dd>
-     *     <dt>
-     *       "tt"
-     *     </dt>
-     *     <dd>The AM/PM designator</dd>
-     *   </dl>
-     * </div>
-     *
-     * @section
-     * <p><h3>Widgets that depend on current culture are:</h3>
-     *    <ul>
-     *        <li> Calendar </li>
-     *        <li> DatePicker </li>
-     *        <li> TimePicker </li>
-     *        <li> NumericTextBox </li>
-     *    </ul>
-     * </p>
-     */
 
      function findCulture(culture) {
         if (culture) {
@@ -999,7 +579,7 @@ function pad(number) {
             } else if (match === "yy") {
                 result = pad(date.getFullYear() % 100);
             } else if (match === "yyyy") {
-                result = date.getFullYear();
+                result = pad(date.getFullYear(), 4);
             } else if (match === "h" ) {
                 result = date.getHours() % 12 || 12;
             } else if (match === "hh") {
@@ -1060,6 +640,7 @@ function pad(number) {
             decimalIndex,
             sharpIndex,
             zeroIndex,
+            percentIndex,
             startZeroIndex,
             start = -1,
             end;
@@ -1080,7 +661,7 @@ function pad(number) {
 
         formatAndPrecision = standardFormatRegExp.exec(format);
 
-        /* standard formatting */
+        // standard formatting
         if (formatAndPrecision) {
             format = formatAndPrecision[1].toLowerCase();
 
@@ -1196,12 +777,18 @@ function pad(number) {
             });
         }
 
+        percentIndex = format.indexOf("%");
+
+        isPercent = percentIndex != -1;
         isCurrency = format.indexOf("$") != -1;
-        isPercent = format.indexOf("%") != -1;
 
         //multiply number if the format has percent
         if (isPercent) {
-            number *= 100;
+            if (format[percentIndex - 1] !== "\\") {
+                number *= 100;
+            } else {
+                format = format.split("\\").join("");
+            }
         }
 
         if (isCurrency || isPercent) {
@@ -1401,7 +988,12 @@ function pad(number) {
         exponentRegExp = /[eE][\-+]?[0-9]+/,
         shortTimeZoneRegExp = /[+|\-]\d{1,2}/,
         longTimeZoneRegExp = /[+|\-]\d{1,2}:\d{2}/,
-        formatsSequence = ["G", "g", "d", "F", "D", "y", "m", "T", "t"];
+        dateRegExp = /^\/Date\((.*?)\)\/$/,
+        formatsSequence = ["G", "g", "d", "F", "D", "y", "m", "T", "t"],
+        numberRegExp = {
+            2: /^\d{1,2}/,
+            4: /^\d{4}/
+        };
 
     function outOfRange(value, start, end) {
         return !(value >= start && value <= end);
@@ -1413,6 +1005,13 @@ function pad(number) {
 
     function mapDesignators(designators) {
         return $.map(designators, designatorPredicate);
+    }
+
+    //if date's day is different than the typed one - adjust
+    function adjustDate(date, hours) {
+        if (!hours && date.getHours() === 23) {
+            date.setHours(date.getHours() + 2);
+        }
     }
 
     function parseExact(value, format, culture) {
@@ -1432,7 +1031,7 @@ function pad(number) {
                 return i;
             },
             getNumber = function(size) {
-                var rg = new RegExp('^\\d{1,' + size + '}'),
+                var rg = numberRegExp[size] || new RegExp('^\\d{1,' + size + '}'),
                     match = value.substr(valueIdx, size).match(rg);
 
                 if (match) {
@@ -1483,7 +1082,8 @@ function pad(number) {
             ch, count, length, pattern,
             pmHour, UTC, ISO8601, matches,
             amDesignators, pmDesignators,
-            hoursOffset, minutesOffset;
+            hoursOffset, minutesOffset,
+            century;
 
         if (!format) {
             format = "d"; //shord date format
@@ -1525,12 +1125,18 @@ function pad(number) {
                     month -= 1; //because month is zero based
                 } else if (ch === "y") {
                     count = lookAhead("y");
-                    year = getNumber(count < 3 ? 2 : 4);
+                    year = getNumber(count);
+
                     if (year === null) {
-                        year = defaultYear;
+                        return null;
                     }
-                    if (year < shortYearCutOff) {
-                        year = (defaultYear - defaultYear % 100) + year;
+
+                    if (count == 2) {
+                        century = defaultYear - defaultYear % 100;
+                        if (shortYearCutOff < year) {
+                            century -= 100;
+                        }
+                        year = century + year;
                     }
                 } else if (ch === "h" ) {
                     lookAhead("h");
@@ -1562,9 +1168,15 @@ function pad(number) {
                 } else if (ch === "f") {
                     count = lookAhead("f");
                     milliseconds = getNumber(count);
+
+                    if (milliseconds !== null && count > 3) {
+                        milliseconds = parseInt(milliseconds.toString().substring(0, 3), 10);
+                    }
+
                     if (milliseconds === null || outOfRange(milliseconds, 0, 999)) {
                         return null;
                     }
+
                 } else if (ch === "t") {
                     count = lookAhead("t");
                     amDesignators = calendar.AM;
@@ -1620,10 +1232,14 @@ function pad(number) {
                 } else if (ch === "'") {
                     literal = true;
                     checkLiteral();
-                } else {
-                    checkLiteral();
+                } else if (!checkLiteral()) {
+                    return null;
                 }
             }
+        }
+
+        if (year === null) {
+            year = defaultYear;
         }
 
         if (pmHour && hours < 12) {
@@ -1643,11 +1259,20 @@ function pad(number) {
                 minutes += -minutesOffset;
             }
 
-            return new Date(Date.UTC(year, month, day, hours, minutes, seconds, milliseconds));
+            value = new Date(Date.UTC(year, month, day, hours, minutes, seconds, milliseconds));
+        } else {
+            value = new Date(year, month, day, hours, minutes, seconds, milliseconds);
+            adjustDate(value, hours);
         }
 
-        return new Date(year, month, day, hours, minutes, seconds, milliseconds);
+        if (year < 100) {
+            value.setFullYear(year);
+        }
+
+        return value;
     }
+
+    kendo._adjustDate = adjustDate;
 
     kendo.parseDate = function(value, formats, culture) {
         if (value instanceof Date) {
@@ -1657,6 +1282,13 @@ function pad(number) {
         var idx = 0,
             date = null,
             length, patterns;
+
+        if (value && value.indexOf("/D") === 0) {
+            date = dateRegExp.exec(value);
+            if (date) {
+                return new Date(parseInt(date[1], 10));
+            }
+        }
 
         culture = kendo.getCulture(culture);
 
@@ -1669,6 +1301,7 @@ function pad(number) {
                 formats[idx] = patterns[formatsSequence[idx]];
             }
             formats[idx] = "ddd MMM dd yyyy HH:mm:ss";
+            formats[++idx] = "yyyy-MM-ddTHH:mm:ss.fffffffzzz";
             formats[++idx] = "yyyy-MM-ddTHH:mm:ss.fffzzz";
             formats[++idx] = "yyyy-MM-ddTHH:mm:sszzz";
             formats[++idx] = "yyyy-MM-ddTHH:mmzzz";
@@ -1763,13 +1396,28 @@ function pad(number) {
     };
 
     if (globalize) {
-        kendo.parseDate = proxy(globalize.parseDate, globalize);
-        kendo.parseFloat = proxy(globalize.parseFloat, globalize);
+        kendo.parseDate = function (value, format, culture) {
+            if (value instanceof Date) {
+                return value;
+            }
+
+            return globalize.parseDate(value, format, culture);
+        };
+
+        kendo.parseFloat = function (value, culture, format) {
+            if (typeof value === NUMBER) {
+                return value;
+            }
+
+            return globalize.parseFloat(value, culture);
+        };
     }
 })();
 
     function wrap(element) {
-        var browser = $.browser, percentage;
+        var browser = support.browser,
+            percentage,
+            isRtl = element.css("direction") == "rtl";
 
         if (!element.parent().hasClass("k-animation-container")) {
             var shadow = element.css(kendo.support.transitions.css + "box-shadow") || element.css("box-shadow"),
@@ -1798,7 +1446,7 @@ function pad(number) {
                          .css({
                              width: width,
                              height: height,
-                             marginLeft: -left,
+                             marginLeft: left * (isRtl ? 1 : -1),
                              paddingLeft: left,
                              paddingRight: right,
                              paddingBottom: bottom
@@ -1852,7 +1500,8 @@ function pad(number) {
     }
 
     function deepExtendOne(destination, source) {
-        var property,
+        var ObservableArray = kendo.data.ObservableArray,
+            property,
             propValue,
             propType,
             destProp;
@@ -1860,7 +1509,7 @@ function pad(number) {
         for (property in source) {
             propValue = source[property];
             propType = typeof propValue;
-            if (propType === OBJECT && propValue !== null && propValue.constructor !== Array) {
+            if (propType === OBJECT && propValue !== null && propValue.constructor !== Array && propValue.constructor !== ObservableArray) {
                 if (propValue instanceof Date) {
                     destination[property] = new Date(propValue.getTime());
                 } else {
@@ -1880,17 +1529,44 @@ function pad(number) {
         return destination;
     }
 
-    /**
-     * Contains results from feature detection.
-     * @name kendo.support
-     * @namespace Contains results from feature detection.
-     */
+    function testRx(agent, rxs, dflt) {
+        for (var rx in rxs) {
+            if (rxs.hasOwnProperty(rx) && rxs[rx].test(agent)) {
+                return rx;
+            }
+        }
+        return dflt !== undefined ? dflt : agent;
+    }
+
+    function getComputedStyles(element, properties) {
+        var styles = {}, computedStyle;
+
+        if (document.defaultView && document.defaultView.getComputedStyle) {
+            computedStyle = document.defaultView.getComputedStyle(element, "");
+
+            if (properties) {
+                $.each(properties, function(idx, value) {
+                    styles[value] = computedStyle.getPropertyValue(value);
+                });
+            }
+        } else {
+            computedStyle = element.currentStyle;
+
+            if (properties) {
+                $.each(properties, function(idx, value) {
+                    styles[value] = computedStyle[value.replace(/\-(\w)/g, function (strMatch, g1) { return g1.toUpperCase(); })];
+                });
+            }
+        }
+
+        if (!kendo.size(styles)) {
+            styles = computedStyle;
+        }
+
+        return styles;
+    }
+
     (function() {
-        /**
-         * Indicates the width of the browser scrollbar. A value of zero means that the browser does not show a visual representation of a scrollbar (i.e. mobile browsers).
-         * @name kendo.support.scrollbar
-         * @property {Boolean}
-         */
         support.scrollbar = function() {
             var div = document.createElement("div"),
                 result;
@@ -1905,43 +1581,28 @@ function pad(number) {
             return result;
         };
 
+        support.isRtl = function(element) {
+            return $(element).closest(".k-rtl").length > 0;
+        };
+
         var table = document.createElement("table");
 
         // Internet Explorer does not support setting the innerHTML of TBODY and TABLE elements
         try {
             table.innerHTML = "<tr><td></td></tr>";
 
-            /**
-             * Indicates whether the browser supports setting of the <tbody> innerHtml.
-             * @name kendo.support.tbodyInnerHtml
-             * @property {Boolean}
-             */
             support.tbodyInnerHtml = true;
         } catch (e) {
             support.tbodyInnerHtml = false;
         }
 
-        /**
-         * Indicates whether the browser supports touch events.
-         * @name kendo.support.touch
-         * @property {Boolean}
-         */
         support.touch = "ontouchstart" in window;
         support.pointers = navigator.msPointerEnabled;
 
-        /**
-         * Indicates whether the browser supports CSS transitions.
-         * @name kendo.support.transitions
-         * @property {Boolean}
-         */
-        var transitions = support.transitions = false;
-        var transforms = support.transforms = false;
+        var transitions = support.transitions = false,
+            transforms = support.transforms = false,
+            elementProto = "HTMLElement" in window ? HTMLElement.prototype : [];
 
-        /**
-         * Indicates whether the browser supports hardware 3d transitions.
-         * @name kendo.support.hasHW3D
-         * @property {Boolean}
-         */
         support.hasHW3D = ("WebKitCSSMatrix" in window && "m11" in new window.WebKitCSSMatrix()) || "MozPerspective" in document.documentElement.style || "msPerspective" in document.documentElement.style;
         support.hasNativeScrolling = typeof document.documentElement.style.webkitOverflowScrolling == "string";
 
@@ -1955,7 +1616,7 @@ function pad(number) {
                 transforms = {
                     css: "-" + lowPrefix + "-",
                     prefix: prefix,
-                    event: (lowPrefix === "o" || lowPrefix === "webkit") ? lowPrefix : ""
+                    event: (lowPrefix === "o" || lowPrefix === "webkit") ? lowPrefix : lowPrefix === "ms" ? "MS" : ""
                 };
 
                 if (hasTransitions) {
@@ -1970,11 +1631,6 @@ function pad(number) {
         support.transforms = transforms;
         support.transitions = transitions;
 
-        /**
-         * Indicates the browser device pixel ratio.
-         * @name kendo.support.devicePixelRatio
-         * @property {Float}
-         */
         support.devicePixelRatio = window.devicePixelRatio === undefined ? 1 : window.devicePixelRatio;
 
         support.detectOS = function (ua) {
@@ -1986,7 +1642,7 @@ function pad(number) {
                     ipad: /(iPad).*OS\s+(\d+)[\._]([\d_]+)/,
                     meego: /(MeeGo).+NokiaBrowser\/(\d+)\.([\d\._]+)/,
                     webos: /(webOS)\/(\d+)\.(\d+(\.\d+)?)/,
-                    blackberry: /(BlackBerry).*?Version\/(\d+)\.(\d+(\.\d+)?)/,
+                    blackberry: /(BlackBerry|BB10).*?Version\/(\d+)\.(\d+(\.\d+)?)/,
                     playbook: /(PlayBook).*?Tablet\s*OS\s*(\d+)\.(\d+(\.\d+)?)/,
                     winphone: /(IEMobile)\/(\d+)\.(\d+(\.\d+)?)/,
                     windows: /(MSIE)\s+(\d+)\.(\d+(\.\d+)?)/
@@ -2005,16 +1661,9 @@ function pad(number) {
                     omobile: /Opera\sMobi/i,
                     firefox: /Firefox|Fennec/i,
                     mobilesafari: /version\/.*safari/i,
+                    chrome: /chrome/i,
                     webkit: /webkit/i,
                     ie: /MSIE|Windows\sPhone/i
-                },
-                testRx = function (agent, rxs, dflt) {
-                    for (var rx in rxs) {
-                        if (rxs.hasOwnProperty(rx) && rxs[rx].test(agent)) {
-                            return rx;
-                        }
-                    }
-                    return dflt !== undefined ? dflt : agent;
                 };
 
             for (var agent in agentRxs) {
@@ -2035,7 +1684,7 @@ function pad(number) {
                         os.flatVersion = os.majorVersion + minorVersion + (new Array(3 - (minorVersion.length < 3 ? minorVersion.length : 2)).join("0"));
                         os.appMode = window.navigator.standalone || (/file|local/).test(window.location.protocol) || typeof window.PhoneGap !== UNDEFINED || typeof window.cordova !== UNDEFINED; // Use file protocol to detect appModes.
 
-                        if (os.android && support.devicePixelRatio < 1.5 && (window.outerWidth > 800 || window.outerHeight > 800)) {
+                        if (os.android && support.devicePixelRatio < 1.5 && (window.outerWidth > 800 || window.outerHeight > 800 || (window.screen && (window.screen.availWidth > 800 || window.screen.availHeight > 800)))) {
                             os.tablet = agent;
                         }
 
@@ -2046,28 +1695,44 @@ function pad(number) {
             return os;
         };
 
-        /**
-         * Parses the mobile OS type and version from the browser user agent.
-         * @name kendo.support.mobileOS
-         */
         support.mobileOS = support.detectOS(navigator.userAgent);
+
+        support.kineticScrollNeeded = support.mobileOS && support.touch;
+
+        function detectBrowser(ua) {
+            var browser = false, match = [],
+                browserRxs = {
+                    webkit: /(chrome)[ \/]([\w.]+)/i,
+                    safari: /(webkit)[ \/]([\w.]+)/i,
+                    opera: /(opera)(?:.*version|)[ \/]([\w.]+)/i,
+                    msie: /(msie) ([\w.]+)/i,
+                    mozilla: /(mozilla)(?:.*? rv:([\w.]+)|)/i
+                };
+
+            for (var agent in browserRxs) {
+                if (browserRxs.hasOwnProperty(agent)) {
+                    match = ua.match(browserRxs[agent]);
+                    if (match) {
+                        browser = {};
+                        browser[agent] = true;
+                        browser[match[1].toLowerCase()] = true;
+                        browser.version = match[2];
+
+                        break;
+                    }
+                }
+            }
+            return browser;
+        }
+
+        support.browser = detectBrowser(navigator.userAgent);
 
         support.zoomLevel = function() {
             return support.touch ? (document.documentElement.clientWidth / window.innerWidth) : 1;
         };
 
-        /**
-         * Indicates the browser support for event capturing
-         * @name kendo.support.eventCapture
-         * @property {Boolean}
-         */
         support.eventCapture = document.documentElement.addEventListener;
 
-        /**
-         * Indicates whether the browser supports input placeholder.
-         * @name kendo.support.placeholder
-         * @property {Boolean}
-         */
         support.placeholder = "placeholder" in document.createElement("input");
         support.stableSort = (function() {
             var sorted = [0,1,2,3,4,5,6,7,8,9,10,11,12].sort(function() { return 0; } );
@@ -2076,14 +1741,22 @@ function pad(number) {
                 sorted[9] === 9 && sorted[10] === 10 && sorted[11] === 11 && sorted[12] === 12;
         })();
 
+        support.matchesSelector = elementProto.webkitMatchesSelector || elementProto.mozMatchesSelector ||
+                                  elementProto.msMatchesSelector || elementProto.oMatchesSelector || elementProto.matchesSelector ||
+          function( selector ) {
+              var nodeList = document.querySelectorAll ? ( this.parentNode || document ).querySelectorAll( selector ) || [] : $(selector),
+                  i = nodeList.length;
+
+              while (i--) {
+                  if (nodeList[i] == this) {
+                      return true;
+                  }
+              }
+
+              return false;
+          };
     })();
 
-    /**
-     * Exposed by jQuery.
-     * @ignore
-     * @name jQuery.fn
-     * @namespace Handy jQuery plug-ins that are used by all Kendo widgets.
-     */
 
     function size(obj) {
         var result = 0, key;
@@ -2144,9 +1817,17 @@ function pad(number) {
         return effects;
     }
 
-    var fx = {
+    function fx(element) {
+        return new kendo.fx.Element(element);
+    }
+
+    $.extend(fx, {
+        Element: function(element) {
+            this.element = $(element);
+        },
+
         promise: function (element, options) {
-            if (options.show) {
+            if (!element.is(":visible")) {
                 element.css({ display: element.data("olddisplay") || "block" }).css("display");
             }
 
@@ -2178,7 +1859,7 @@ function pad(number) {
 
             return element;
         }
-    };
+    });
 
     function prepareAnimationOptions(options, duration, reverse, complete) {
         if (typeof options === STRING) {
@@ -2216,19 +1897,22 @@ function pad(number) {
             reverse: false,
             init: noop,
             teardown: noop,
-            hide: false,
-            show: false
+            hide: false
         }, options, { completeCallback: options.complete, complete: noop }); // Move external complete callback, so deferred.resolve can be always executed.
 
     }
 
     function animate(element, options, duration, reverse, complete) {
-        element.each(function (idx, el) { // fire separate queues on every element to separate the callback elements
-            el = $(el);
-            el.queue(function () {
-                fx.promise(el, prepareAnimationOptions(options, duration, reverse, complete));
+        var idx = 0,
+            length = element.length,
+            instance;
+
+        for (; idx < length; idx ++) {
+            instance = $(element[idx]);
+            instance.queue(function() {
+                fx.promise(instance, prepareAnimationOptions(options, duration, reverse, complete));
             });
-        });
+        }
 
         return element;
     }
@@ -2236,20 +1920,6 @@ function pad(number) {
     function animateTo(element, destination, options, duration, reverse, complete) {
         return fx.transitionPromise(element, destination, prepareAnimationOptions(options, duration, reverse, complete));
     }
-
-    extend($.fn, /** @lends jQuery.fn */{
-        kendoStop: function(clearQueue, gotoEnd) {
-            return this.stop(clearQueue, gotoEnd);
-        },
-
-        kendoAnimate: function(options, duration, reverse, complete) {
-            return animate(this, options, duration, reverse, complete);
-        },
-
-        kendoAnimateTo: function(destination, options, duration, reverse, complete) {
-            return animateTo(this, destination, options, duration, reverse, complete);
-        }
-    });
 
     function toggleClass(element, classes, options, add) {
         if (classes) {
@@ -2263,28 +1933,35 @@ function pad(number) {
         return element;
     }
 
-    extend($.fn, /** @lends jQuery.fn */{
-        kendoAddClass: function(classes, options){
-            return toggleClass(this, classes, options, true);
-        },
-        kendoRemoveClass: function(classes, options){
-            return toggleClass(this, classes, options, false);
-        },
-        kendoToggleClass: function(classes, options, toggle){
-            return toggleClass(this, classes, options, toggle);
-        }
-    });
+    if (!("kendoAnimate" in $.fn)) {
+        extend($.fn, {
+            kendoStop: function(clearQueue, gotoEnd) {
+                return this.stop(clearQueue, gotoEnd);
+            },
+
+            kendoAnimate: function(options, duration, reverse, complete) {
+                return animate(this, options, duration, reverse, complete);
+            },
+
+            kendoAnimateTo: function(destination, options, duration, reverse, complete) {
+                return animateTo(this, destination, options, duration, reverse, complete);
+            },
+
+            kendoAddClass: function(classes, options){
+                return kendo.toggleClass(this, classes, options, true);
+            },
+            kendoRemoveClass: function(classes, options){
+                return kendo.toggleClass(this, classes, options, false);
+            },
+            kendoToggleClass: function(classes, options, toggle){
+                return kendo.toggleClass(this, classes, options, toggle);
+            }
+        });
+    }
 
     var ampRegExp = /&/g,
         ltRegExp = /</g,
         gtRegExp = />/g;
-    /**
-     * Encodes HTML characters to entities.
-     * @name kendo.htmlEncode
-     * @function
-     * @param {String} value The string that needs to be HTML encoded.
-     * @returns {String} The encoded string.
-     */
     function htmlEncode(value) {
         return ("" + value).replace(ampRegExp, "&amp;").replace(ltRegExp, "&lt;").replace(gtRegExp, "&gt;");
     }
@@ -2303,7 +1980,9 @@ function pad(number) {
     };
 
     if (support.touch) {
-        /** @ignore */
+
+        var mobileChrome = (support.mobileOS.browser == "chrome" && !support.mobileOS.ios);
+
         touchLocation = function(e, id) {
             var changedTouches = e.changedTouches || e.originalEvent.changedTouches;
 
@@ -2329,9 +2008,10 @@ function pad(number) {
         };
 
         eventTarget = function(e) {
-            var touches = "originalEvent" in e ? e.originalEvent.changedTouches : "changedTouches" in e ? e.changedTouches : null;
+            var touches = "originalEvent" in e ? e.originalEvent.changedTouches : "changedTouches" in e ? e.changedTouches : null,
+                property = mobileChrome ? "screen" : "client";
 
-            return touches ? document.elementFromPoint(touches[0].clientX, touches[0].clientY) : null;
+            return touches ? document.elementFromPoint(touches[0][property + "X"], touches[0][property + "Y"]) : e.target;
         };
 
         each(["swipe", "swipeLeft", "swipeRight", "swipeUp", "swipeDown", "doubleTap", "tap"], function(m, value) {
@@ -2342,22 +2022,34 @@ function pad(number) {
     }
 
     if (support.touch) {
-        support.mousedown = "touchstart";
-        support.mouseup = "touchend";
-        support.mousemove = "touchmove";
-        support.mousecancel = "touchcancel";
-        support.resize = "orientationchange";
+        if (!support.mobileOS) {
+            support.mousedown = "mousedown touchstart";
+            support.mouseup = "mouseup touchend";
+            support.mousemove = "mousemove touchmove";
+            support.mousecancel = "mouseleave touchcancel";
+            support.click = "click touchend";
+            support.resize = "resize";
+        } else {
+            support.mousedown = "touchstart";
+            support.mouseup = "touchend";
+            support.mousemove = "touchmove";
+            support.mousecancel = "touchcancel";
+            support.click = "touchend";
+            support.resize = "orientationchange";
+        }
     } else if (support.pointers) {
         support.mousemove = "MSPointerMove";
         support.mousedown = "MSPointerDown";
         support.mouseup = "MSPointerUp";
         support.mousecancel = "MSPointerCancel";
+        support.click = "MSPointerUp";
         support.resize = "orientationchange resize";
     } else {
         support.mousemove = "mousemove";
         support.mousedown = "mousedown";
         support.mouseup = "mouseup";
         support.mousecancel = "mouseleave";
+        support.click = "click";
         support.resize = "resize";
     }
 
@@ -2392,16 +2084,12 @@ function pad(number) {
     },
     localUrlRe = /^([a-z]+:)?\/\//i;
 
-    extend(kendo, /** @lends kendo */ {
-        /**
-         * @name kendo.ui
-         * @namespace Contains all classes for the Kendo UI widgets.
-         */
+    extend(kendo, {
         ui: kendo.ui || {},
         fx: kendo.fx || fx,
-        data: kendo.data || {},
         mobile: kendo.mobile || {},
-        dataviz: kendo.dataviz || {ui: {}},
+        data: kendo.data || {},
+        dataviz: kendo.dataviz || {ui: { roles: {}}},
         keys: {
             INSERT: 45,
             DELETE: 46,
@@ -2422,34 +2110,25 @@ function pad(number) {
             F10: 121,
             F12: 123
         },
-        support: support,
-        animate: animate,
+        support: kendo.support || support,
+        animate: kendo.animate || animate,
         ns: "",
         attr: function(value) {
             return "data-" + kendo.ns + value;
         },
         wrap: wrap,
         deepExtend: deepExtend,
+        getComputedStyles: getComputedStyles,
         size: size,
         isNodeEmpty: isNodeEmpty,
-        getOffset: getOffset,
-        parseEffects: parseEffects,
-        toggleClass: toggleClass,
-        directions: directions,
+        getOffset: kendo.getOffset || getOffset,
+        parseEffects: kendo.parseEffects || parseEffects,
+        toggleClass: kendo.toggleClass || toggleClass,
+        directions: kendo.directions || directions,
         Observable: Observable,
         Class: Class,
         Template: Template,
-        /**
-         * Shorthand for {@link kendo.Template.compile}.
-         * @name kendo.template
-         * @function
-         */
         template: proxy(Template.compile, Template),
-        /**
-         * Shorthand for {@link kendo.Template.render}.
-         * @name kendo.render
-         * @function
-         */
         render: proxy(Template.render, Template),
         stringify: proxy(JSON.stringify, JSON),
         touchLocation: touchLocation,
@@ -2458,7 +2137,7 @@ function pad(number) {
         isLocalUrl: function(url) {
             return url && !localUrlRe.test(url);
         },
-        /** @ignore */
+
         expr: function(expression, safe) {
             expression = expression || "";
 
@@ -2474,22 +2153,22 @@ function pad(number) {
 
             return expression;
         },
-        /** @ignore */
+
         getter: function(expression, safe) {
             return getterCache[expression] = getterCache[expression] || new Function("d", "return " + kendo.expr(expression, safe));
         },
-        /** @ignore */
+
         setter: function(expression) {
             return setterCache[expression] = setterCache[expression] || new Function("d,value", "d." + expression + "=value");
         },
-        /** @ignore */
+
         accessor: function(expression) {
             return {
                 get: kendo.getter(expression),
                 set: kendo.setter(expression)
             };
         },
-        /** @ignore */
+
         guid: function() {
             var id = "", i, random;
 
@@ -2509,7 +2188,7 @@ function pad(number) {
             return role.replace(/(\S+)/g, "[" + kendo.attr("role") + "=$1],").slice(0, -1);
         },
 
-        /** @ignore */
+
         logToConsole: function(message) {
             var console = window.console;
 
@@ -2519,29 +2198,23 @@ function pad(number) {
         }
     });
 
-    var Widget = Observable.extend( /** @lends kendo.ui.Widget.prototype */ {
-        /**
-         * Initializes widget. Sets `element` and `options` properties.
-         * @constructs
-         * @class Represents a UI widget. Base class for all Kendo widgets
-         * @extends kendo.Observable
-         */
+    var Widget = Observable.extend( {
         init: function(element, options) {
             var that = this;
 
-            that.element = $(element);
+            that.element = kendo.jQuery(element).handler(that);
 
             Observable.fn.init.call(that);
 
-            that.options = extend(true, {}, that.options, options);
+            options = that.options = extend(true, {}, that.options, options);
 
             if (!that.element.attr(kendo.attr("role"))) {
-                that.element.attr(kendo.attr("role"), (that.options.name || "").toLowerCase());
+                that.element.attr(kendo.attr("role"), (options.name || "").toLowerCase());
             }
 
-            that.element.data("kendo" + that.options.prefix + that.options.name, that);
+            that.element.data("kendo" + options.prefix + options.name, that);
 
-            that.bind(that.events, that.options);
+            that.bind(that.events, options);
         },
 
         events: [],
@@ -2550,10 +2223,41 @@ function pad(number) {
             prefix: ""
         },
 
-        setOptions: function(options) {
-            $.extend(this.options, options);
+        _tabindex: function(target) {
+            target = target || this.wrapper;
 
-            this.bind(this.events, options);
+            var element = this.element,
+                TABINDEX = "tabindex",
+                tabindex = target.attr(TABINDEX) || element.attr(TABINDEX);
+
+            element.removeAttr(TABINDEX);
+
+            target.attr(TABINDEX, !isNaN(tabindex) ? tabindex : 0);
+        },
+
+        setOptions: function(options) {
+            var that = this,
+                idx = 0,
+                length = that.events.length,
+                e;
+
+            for (; idx < length; idx ++) {
+                e = that.events[idx];
+                if (that.options[e] && options[e]) {
+                    that.unbind(e, that.options[e]);
+                }
+            }
+
+            $.extend(that.options, options);
+            that.bind(that.events, options);
+        },
+
+        destroy: function() {
+            var that = this;
+
+            that.element.removeData("kendo" + that.options.prefix + that.options.name);
+
+            that.unbind();
         }
     });
 
@@ -2586,7 +2290,7 @@ function pad(number) {
         } else if (!isNaN(parseFloat(value))) {
             value = parseFloat(value);
         } else if (jsonRegExp.test(value) && !jsonFormatRegExp.test(value)) {
-            value = $.parseJSON(value);
+            value = eval("(" + value + ")");
         }
 
         return value;
@@ -2638,7 +2342,11 @@ function pad(number) {
             return;
         }
 
-        widget = roles[role];
+        if (role.indexOf(".") === -1) {
+            widget = roles[role];
+        } else { // full namespace path - like kendo.ui.Widget
+            widget = kendo.getter(role)(window);
+        }
 
         if (!widget) {
             return;
@@ -2666,7 +2374,7 @@ function pad(number) {
             }
         }
 
-        result = $(element).data("kendo" + widget.fn.options.name);
+        result = $(element).data("kendo" + widget.fn.options.prefix + widget.fn.options.name);
 
         if (!result) {
             result = new widget(element, options);
@@ -2677,9 +2385,8 @@ function pad(number) {
         return result;
     };
 
-    kendo.init = function(element) {
-        var namespaces = slice.call(arguments, 1),
-            roles;
+    kendo.rolesFromNamespaces = function(namespaces) {
+        var roles;
 
         if (!namespaces[0]) {
             namespaces = [kendo.ui, kendo.dataviz.ui];
@@ -2687,25 +2394,35 @@ function pad(number) {
 
         roles = $.map(namespaces, function(namespace) { return namespace.roles; }).reverse();
 
-        roles = extend.apply(null, [{}].concat(roles));
+        return extend.apply(null, [{}].concat(roles));
+    };
+
+    kendo.init = function(element) {
+        var roles = kendo.rolesFromNamespaces(slice.call(arguments, 1));
 
         $(element).find("[data-" + kendo.ns + "role]").andSelf().each(function(){
             kendo.initWidget(this, {}, roles);
         });
     };
 
+    kendo.destroy = function(element) {
+        $(element).find("[data-" + kendo.ns + "role]").andSelf().each(function(){
+            var element = $(this),
+                widget = kendo.widgetInstance(element, kendo.ui) ||
+                         kendo.widgetInstance(element, kendo.mobile.ui) ||
+                         kendo.widgetInstance(element, kendo.dataviz.ui);
+
+            if (widget) {
+                widget.destroy();
+            }
+        });
+    };
+
     kendo.parseOptions = parseOptions;
 
-    extend(kendo.ui, /** @lends kendo.ui */{
+    extend(kendo.ui, {
         Widget: Widget,
         roles: {},
-        /**
-         * Shows an overlay with a loading message, indicating that an action is in progress.
-         * @name kendo.ui.progress
-         * @function
-         * @param {jQuery} container The container that will hold the overlay
-         * @param {Boolean} toggle Whether the overlay should be shown or hidden
-         */
         progress: function(container, toggle) {
             var mask = container.find(".k-loading-mask");
 
@@ -2720,23 +2437,6 @@ function pad(number) {
                 mask.remove();
             }
         },
-        /**
-         * Helper method for writing new widgets.
-         * Exposes a jQuery plug-in that will handle the widget creation and attach its client-side object in the appropriate data-* attribute.
-         * @name kendo.ui.plugin
-         * @function
-         * @param {kendo.ui.Widget} widget The widget function.
-         * @param {Object} register <kendo.ui> The object where the reference to the widget is recorded.
-         * @param {Object} prefix <""> The plugin function prefix, e.g. "Mobile" will register "kendoMobileFoo".
-         * @example
-         * function TextBox(element, options);
-         * kendo.ui.plugin(TextBox);
-         *
-         * // initialize a new TextBox for each input, with the given options object.
-         * $("input").kendoTextBox({ });
-         * // get the TextBox object and call the value API method
-         * $("input").data("kendoTextBox").value();
-         */
         plugin: function(widget, register, prefix) {
             var name = widget.fn.options.name,
                 getter;
@@ -2795,16 +2495,16 @@ function pad(number) {
         }
     });
 
-    var MobileWidget = Widget.extend(/** @lends kendo.mobile.ui.Widget.prototype */{
-        /**
-         * Initializes mobile widget. Sets `element` and `options` properties.
-         * @constructs
-         * @class Represents a mobile UI widget. Base class for all Kendo mobile widgets.
-         * @extends kendo.ui.Widget
-         */
+    var MobileWidget = Widget.extend({
         init: function(element, options) {
             Widget.fn.init.call(this, element, options);
+            this.element.autoApplyNS();
             this.wrapper = this.element;
+        },
+
+        destroy: function() {
+            Widget.fn.destroy.call(this);
+            this.element.kendoDestroy();
         },
 
         options: {
@@ -2821,19 +2521,11 @@ function pad(number) {
         }
     });
 
-    /**
-     * @name kendo.mobile
-     * @namespace This object contains all code introduced by the Kendo mobile suite, plus helper functions that are used across all mobile widgets.
-     */
     extend(kendo.mobile, {
         init: function(element) {
             kendo.init(element, kendo.mobile.ui, kendo.ui, kendo.dataviz.ui);
         },
 
-        /**
-         * @name kendo.mobile.ui
-         * @namespace Contains all classes for the Kendo Mobile UI widgets.
-         */
         ui: {
             Widget: MobileWidget,
             roles: {},
@@ -2843,33 +2535,23 @@ function pad(number) {
         }
     });
 
-    /**
-     * Enables kinetic scrolling on touch devices
-     * @name kendo.touchScroller
-     * @function
-     * @param {Selector} element The container element to enable scrolling for.
-     */
-    kendo.touchScroller = function(element, options) {
-        if (support.touch && kendo.mobile.ui.Scroller && !element.data("kendoMobileScroller")) {
-            element.kendoMobileScroller(options);
-            return element.data("kendoMobileScroller");
-        } else {
-            return false;
-        }
+    kendo.touchScroller = function(elements, options) {
+        // return the first touch scroller
+        return $(elements).map(function(idx, element) {
+            element = $(element);
+            if (support.kineticScrollNeeded && kendo.mobile.ui.Scroller && !element.data("kendoMobileScroller")) {
+                element.kendoMobileScroller(options);
+                return element.data("kendoMobileScroller");
+            } else {
+                return false;
+            }
+        })[0];
     };
 
-    /**
-     * Prevents the default event action. Should be supplied as an event callback
-     * @name kendo.preventDefault
-     * @function
-     */
     kendo.preventDefault = function(e) {
         e.preventDefault();
     };
 
-    /**
-     * Retrieves the widget for a given element (if any)
-     */
     kendo.widgetInstance = function(element, suite) {
         var widget = suite.roles[element.data(kendo.ns + "role")];
 
@@ -2878,12 +2560,6 @@ function pad(number) {
         }
     };
 
-    /**
-     * Binds to orientation change or resize (depending on the platform)
-     * Abstracts problem with android triggering event before the dimensions have changed.
-     * @function
-     * @param {Function} callback The callback to be executed
-     */
     kendo.onResize = function(callback) {
         var handler = callback;
         if (support.mobileOS.android) {
@@ -2893,8 +2569,182 @@ function pad(number) {
         $(window).on(support.resize, handler);
     };
 
-    kendo.data = function(element, key) {
+    kendo.attrValue = function(element, key) {
         return element.data(kendo.ns + key);
     };
+
+    kendo.days = {
+        Sunday: 0,
+        Monday: 1,
+        Tuesday: 2,
+        Wednesday: 3,
+        Thursday: 4,
+        Friday: 5,
+        Saturday: 6
+    };
+
+    function focusable(element, isTabIndexNotNaN) {
+        var nodeName = element.nodeName.toLowerCase();
+
+        return (/input|select|textarea|button|object/.test(nodeName) ?
+                !element.disabled :
+                "a" === nodeName ?
+                element.href || isTabIndexNotNaN :
+                isTabIndexNotNaN
+               ) &&
+            visible(element);
+    }
+
+    function visible(element) {
+        return !$(element).parents().andSelf().filter(function() {
+            return $.css(this,"visibility") === "hidden" || $.expr.filters.hidden(this);
+        }).length;
+    }
+
+    $.extend($.expr[ ":" ], {
+        focusable: function(element) {
+            var idx = $.attr(element, "tabindex");
+            return focusable(element, !isNaN(idx) && idx > -1);
+        }
+    });
+
+
+    var MOUSE_EVENTS = ["mousedown", "mousemove", "mouseenter", "mouseleave", "mouseover", "mouseout", "mouseup", "click"];
+
+    $.extend(kendo, {
+        setupMouseMute: function() {
+            var idx = 0,
+                length = MOUSE_EVENTS.length,
+                element = document.documentElement;
+
+            if (kendo.mouseTrap || !support.eventCapture) {
+                return;
+            }
+
+            kendo.mouseTrap = true;
+            kendo.captureMouseEvents = false;
+
+            var handler = function(e) {
+                if (kendo.captureMouse) {
+                    e.stopPropagation();
+                    if (e.type === "click") {
+                        e.preventDefault();
+                    }
+                }
+            };
+
+            for (; idx < length; idx++) {
+                element.addEventListener(MOUSE_EVENTS[idx], handler, true);
+            }
+        },
+
+        muteMouse: function() {
+            kendo.captureMouse = true;
+            clearTimeout(kendo.mouseTrapTimeoutID);
+        },
+
+        unMuteMouse: function() {
+            kendo.mouseTrapTimeoutID = setTimeout(function() {
+                kendo.captureMouse = false;
+            }, 400);
+        }
+    });
+
+    var eventMap = {
+        down: "touchstart mousedown",
+        move: "mousemove touchmove",
+        up: "mouseup touchend touchcancel",
+        cancel: "mouseleave touchcancel"
+    };
+
+    if (support.pointers) {
+        eventMap = {
+            down: "MSPointerDown",
+            move: "MSPointerMove",
+            up: "MSPointerUp",
+            cancel: "MSPointerCancel"
+        };
+    }
+
+    function applyEventMap(e) {
+        return (eventMap[e] || e);
+    }
+
+    var on = $.fn.on;
+
+    var kendoJQuery = $.sub();
+
+    extend(kendoJQuery.fn, {
+        handler: function(handler) {
+            this.data("handler", handler);
+            return this;
+        },
+
+        autoApplyNS: function() {
+            this.data("kendoNS", "." + kendo.guid());
+            return this;
+        },
+
+        on: function() {
+            var that = this,
+                ns = that.data("kendoNS");
+
+            // support for event map signature
+            if (arguments.length === 1) {
+                return on.call(that, arguments[0]);
+            }
+
+            var context = that,
+                args = slice.call(arguments);
+
+            if (typeof args[args.length -1] === UNDEFINED) {
+                args.pop();
+            }
+
+            var callback =  args[args.length - 1],
+                events = args[0].replace(/([^ ]+)/g, applyEventMap);
+
+            if (ns) {
+
+                events = events.replace(/( |$)/g, ns + " ");
+            }
+
+            // setup mouse trap
+            if (support.touch && events.indexOf("mouse") > -1 && this[0] !== document.documentElement) {
+                kendo.setupMouseMute();
+
+                on.call(this, {
+                    touchstart: kendo.muteMouse,
+                    touchend: kendo.unMuteMouse
+                });
+            }
+
+            if (typeof callback === STRING) {
+                context = that.data("handler");
+                callback = context[callback];
+
+                args[args.length - 1] = function(e) {
+                    callback.call(context, e);
+                };
+            }
+
+            args[0] = events;
+
+            on.apply(that, args);
+
+            return that;
+        },
+
+
+        kendoDestroy: function() {
+            var ns = this.data("kendoNS");
+            if (ns) {
+                this.off(ns);
+            }
+            return this;
+        }
+    });
+
+    kendo.jQuery = kendoJQuery;
+    kendo.eventMap = eventMap;
 })(jQuery);
-;
