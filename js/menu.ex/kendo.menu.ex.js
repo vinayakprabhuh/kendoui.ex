@@ -105,7 +105,9 @@
             name: "MenuEx",
             delay: 1000,
             event: 'contextmenu',
-            orientation: 'vertical'
+            orientation: 'vertical',
+        	offsetY: 0,
+            offsetX: 0,
         },
 
         init: function(element, options) {
@@ -180,7 +182,7 @@
 
                     $target.find('.k-in').addClass('k-state-focused');
                 }
-                this.element.css({'top': e.pageY, 'left': e.pageX});
+                this.element.css({ 'top': e.pageY + this.options.offsetY, 'left': e.pageX + this.options.offsetX });
                 this.element.fadeIn(function(){ showing = true; });
             }
         },
