@@ -62,11 +62,13 @@ https://github.com/insanio/kendoui.ex/
 
 /*CUSTOMIZATIONS
 05.14.2013 - JLL - added offsetY, offsetX options
+05.15.22013 - JLL - added multiple context menus on same page and show/hide work properly
+                  - added screen detection mode
 */
 
 (function ($, undefined) {
 
-    var parent = window.kendo.ui.Menu.renderItem;
+	var parent = window.kendo.ui.Menu.renderItem;
 
 	$.extend(window.kendo.ui.Menu, {
 
@@ -107,7 +109,8 @@ https://github.com/insanio/kendoui.ex/
 		item: {},
 
 		hiding: false,
-        showing: false,
+		showing: false,
+        enableScreenDetection: true,
 
 		options: {
 			name: "MenuEx",
@@ -131,9 +134,9 @@ https://github.com/insanio/kendoui.ex/
 				event = options.event || that.options.event;
 
 				$(document).ready(function () {
-					$(options.anchor).bind(event, function (e) {
+					$(options.anchor).on(event, function (e) {
 						that.show(options.anchor, e);
-						return false;
+					    return false;
 					});
 				});
 
@@ -193,9 +196,33 @@ https://github.com/insanio/kendoui.ex/
 				if ($target.hasClass('k-item')) {
 
 					$target.find('.k-in').addClass('k-state-focused');
+				}			
+
+			    //determine if off screen
+				var eleHeight = $(this.element).height();
+				var eleWidth = $(this.element).width();
+				var xPos = e.pageX + this.options.offsetX;
+				var yPos = e.pageY + this.options.offsetY;
+
+				if (this.enableScreenDetection) {
+				    if (
+                        (eleWidth + xPos) > window.innerWidth ||
+                        (eleHeight + yPos) > window.innerHeight
+                        ) {
+				        //off screen detected, need to ignore off set settings and mouse position and position to fix the menu
+				        if ((eleWidth + xPos) > window.innerWidth) {
+				            xPos = window.innerWidth - eleWidth - 3;
+				        }
+				        if ((eleHeight + yPos) > window.innerHeight) {
+				            yPos = window.innerHeight - eleHeight - 3;
+				        }
+				    }
+
 				}
 
-				this.element.css({ 'top': e.pageY + this.options.offsetY, 'left': e.pageX + this.options.offsetX });
+                //place menu
+				this.element.css({ 'top': yPos, 'left': xPos });
+
 				this.element.fadeIn($.proxy(function () { this.showing = true; }, this));
 			}
 		},
