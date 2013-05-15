@@ -1,4 +1,5 @@
 /*
+https://github.com/insanio/kendoui.ex/
  *# Kendo UI MenuEx by CZ
  *
  * MenuEx allows you to create:
@@ -59,141 +60,153 @@
  *
  */
 
-(function( $, undefined ){
+/*CUSTOMIZATIONS
+05.14.2013 - JLL - added offsetY, offsetX options
+*/
+
+(function ($, undefined) {
 
     var parent = window.kendo.ui.Menu.renderItem;
 
-    $.extend(window.kendo.ui.Menu, {
+	$.extend(window.kendo.ui.Menu, {
 
-        renderItem: function ( options ) {
+		renderItem: function (options) {
 
-            var r = parent(options);
-            var injects = "";
+			var r = parent(options);
+			var injects = "";
 
-            if (options.item.data) {
+			if (options.item.data) {
 
-                injects = " data-data='" + JSON.stringify(options.item.data) + "'";
-            }
+			    injects = " data-data='" + JSON.stringify(options.item.data) + "'";
+			}
 
-            if (injects.length > 0) {
+			if (injects.length > 0) {
 
-                var re = /(<li)([^>]*>.*)/;
-                var m = re.exec(r);
+			    var re = /(<li)([^>]*>.*)/;
+			    var m = re.exec(r);
 
-                r = m[1] + injects + m[2];
-            }
+			    r = m[1] + injects + m[2];
+			}
 
-            return r;
-        }
-    });
+			return r;
+		}
+	});
 
-    var hiding = false;
-    var showing = false;
+	//var hiding = false;
+	//var showing = false;
 
-    var MenuEx = window.kendo.ui.Menu.extend({/** @lends kendo.ui.Menu.prototype */
+	var MenuEx = window.kendo.ui.Menu.extend({/** @lends kendo.ui.Menu.prototype */
 
-        /**
+		/**
          * target object which was clicked
          */
-        target: {},
-        /**
+		target: {},
+		/**
          * menu item which was clicked
          */
-        item: {},
+		item: {},
 
-        options: {
-            name: "MenuEx",
-            delay: 1000,
-            event: 'contextmenu',
-            orientation: 'vertical',
-        	offsetY: 0,
+		hiding: false,
+        showing: false,
+
+		options: {
+			name: "MenuEx",
+			delay: 1000,
+			event: 'contextmenu',
+			orientation: 'vertical',
+			offsetY: 0,
             offsetX: 0,
-        },
+		},
 
-        init: function(element, options) {
+		init: function (element, options) {
 
-            var that = this;
+			var that = this;
 
-            window.kendo.ui.Menu.fn.init.call(that, element, options);
+			window.kendo.ui.Menu.fn.init.call(that, element, options);
 
-            that.element.addClass('k-context-menu');
+			that.element.addClass('k-context-menu');
 
-            if (options.anchor){
+			if (options.anchor) {
 
-                event = options.event || that.options.event;
+				event = options.event || that.options.event;
 
-                $(document).ready(function(){
-                    $(options.anchor).bind(event, function(e){
-                        that.show(options.anchor, e);
-                        return false;
-                    });
-                }); 
+				$(document).ready(function () {
+					$(options.anchor).bind(event, function (e) {
+						that.show(options.anchor, e);
+						return false;
+					});
+				});
 
-                this.bind('mouseleave', function() {
+				$(this.element).on('mouseleave', function () {
 
-                    delay = options.delay || that.options.delay;
-                    setTimeout(function(){ that.hide() }, delay);
-                });
-            }
+					delay = options.delay || that.options.delay;
+					setTimeout(function () { that.hide() }, delay);
+				});
+			}
 
-            $(document).click($.proxy( that._documentClick, that ));
+			$(document).click($.proxy(that._documentClick, that));
 
-            var items = that.element.find('.k-item');
+			var items = that.element.find('.k-item');
 
-            $.each(options.dataSource, function(i, el) {
+			$.each(options.dataSource, function (i, el) {
 
-                if (el.click != undefined) {
+				if (el.click != undefined) {
 
-                    jQuery(items[i]).click( function(e) {
+					jQuery(items[i]).click(function (e) {
 
-                        //el.click.call($(e.target).parents('li'), e);
-                        that.item = $(e.target).parents('li');
-                        el.click.call(that, e);
-                    });
-                }
-            });
-        },
+						//el.click.call($(e.target).parents('li'), e);
+						that.item = $(e.target).parents('li');
+						el.click.call(that, e);
+					});
+				}
+			});
+		},
 
-        hide: function () {
+		hide: function () {
 
-            if (showing) {
+			if (this.showing) {
 
-                hiding = true;
-                var $target = $(this.target);
-                if ($target.hasClass('k-item')) {
+			    this.hiding = true;
 
-                    $target.find('.k-in').removeClass('k-state-focused');
-                }
-                this.element.fadeOut(function() {
+			    var $target = $(this.target);
 
-                    hiding = false;
-                    showing = false;
-                });
-            }
-        },
+				if ($target.hasClass('k-item')) {
 
-        show: function (anchor, e) {
+					$target.find('.k-in').removeClass('k-state-focused');
+				}
 
-            if (hiding == false) {
+				this.element.fadeOut($.proxy(function () {
 
-                this.target = e.currentTarget;
-                var $target = $(this.target);
-                if ($target.hasClass('k-item')) {
+				    this.hiding = false;
+				    this.showing = false;		    
 
-                    $target.find('.k-in').addClass('k-state-focused');
-                }
-                this.element.css({ 'top': e.pageY + this.options.offsetY, 'left': e.pageX + this.options.offsetX });
-                this.element.fadeIn(function(){ showing = true; });
-            }
-        },
+				}, this));
+			}
+		},
 
-       _documentClick: function (e) {
+		show: function (anchor, e) {
 
-            var that = this;
-            that.hide();
-        }
-    });
+			if (this.hiding == false) {
 
-    window.kendo.ui.plugin(MenuEx);
+				this.target = e.currentTarget;
+				var $target = $(this.target);
+				if ($target.hasClass('k-item')) {
+
+					$target.find('.k-in').addClass('k-state-focused');
+				}
+
+				this.element.css({ 'top': e.pageY + this.options.offsetY, 'left': e.pageX + this.options.offsetX });
+				this.element.fadeIn($.proxy(function () { this.showing = true; }, this));
+			}
+		},
+
+		_documentClick: function (e) {
+
+		    var that = this;
+		    that.hide();
+		}
+	});
+
+	window.kendo.ui.plugin(MenuEx);
 
 })(jQuery);
