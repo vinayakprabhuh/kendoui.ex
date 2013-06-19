@@ -1,4 +1,5 @@
 /*
+https://github.com/insanio/kendoui.ex/
  *# Kendo UI MenuEx by CZ
  *
  * MenuEx allows you to create:
@@ -59,139 +60,180 @@
  *
  */
 
-(function( $, undefined ){
+/*CUSTOMIZATIONS
+05.14.2013 - JLL - added offsetY, offsetX options
+05.15.22013 - JLL - added multiple context menus on same page and show/hide work properly
+                  - added screen detection mode
+*/
 
-    var parent = window.kendo.ui.Menu.renderItem;
+(function ($, undefined) {
 
-    $.extend(window.kendo.ui.Menu, {
+	var parent = window.kendo.ui.Menu.renderItem;
 
-        renderItem: function ( options ) {
+	$.extend(window.kendo.ui.Menu, {
 
-            var r = parent(options);
-            var injects = "";
+		renderItem: function (options) {
 
-            if (options.item.data) {
+			var r = parent(options);
+			var injects = "";
 
-                injects = " data-data='" + JSON.stringify(options.item.data) + "'";
-            }
+			if (options.item.data) {
 
-            if (injects.length > 0) {
+			    injects = " data-data='" + JSON.stringify(options.item.data) + "'";
+			}
 
-                var re = /(<li)([^>]*>.*)/;
-                var m = re.exec(r);
+			if (injects.length > 0) {
 
-                r = m[1] + injects + m[2];
-            }
+			    var re = /(<li)([^>]*>.*)/;
+			    var m = re.exec(r);
 
-            return r;
-        }
-    });
+			    r = m[1] + injects + m[2];
+			}
 
-    var hiding = false;
-    var showing = false;
+			return r;
+		}
+	});
 
-    var MenuEx = window.kendo.ui.Menu.extend({/** @lends kendo.ui.Menu.prototype */
+	//var hiding = false;
+	//var showing = false;
 
-        /**
+	var MenuEx = window.kendo.ui.Menu.extend({/** @lends kendo.ui.Menu.prototype */
+
+		/**
          * target object which was clicked
          */
-        target: {},
-        /**
+		target: {},
+		/**
          * menu item which was clicked
          */
-        item: {},
+		item: {},
 
-        options: {
-            name: "MenuEx",
-            delay: 1000,
-            event: 'contextmenu',
-            orientation: 'vertical'
-        },
+		hiding: false,
+		showing: false,
+        enableScreenDetection: true,
 
-        init: function(element, options) {
+		options: {
+			name: "MenuEx",
+			delay: 1000,
+			event: 'contextmenu',
+			orientation: 'vertical',
+			offsetY: 0,
+            offsetX: 0,
+		},
 
-            var that = this;
+		init: function (element, options) {
 
-            window.kendo.ui.Menu.fn.init.call(that, element, options);
+			var that = this;
 
-            that.element.addClass('k-context-menu');
+			window.kendo.ui.Menu.fn.init.call(that, element, options);
 
-            if (options.anchor){
+			that.element.addClass('k-context-menu');
 
-                event = options.event || that.options.event;
+			if (options.anchor) {
 
-                $(document).ready(function(){
-                    $(options.anchor).bind(event, function(e){
-                        that.show(options.anchor, e);
-                        return false;
-                    });
-                }); 
+				event = options.event || that.options.event;
 
-                this.bind('mouseleave', function() {
+				$(document).ready(function () {
+					$(options.anchor).on(event, function (e) {
+						that.show(options.anchor, e);
+					    return false;
+					});
+				});
 
-                    delay = options.delay || that.options.delay;
-                    setTimeout(function(){ that.hide() }, delay);
-                });
-            }
+				$(this.element).on('mouseleave', function () {
 
-            $(document).click($.proxy( that._documentClick, that ));
+					delay = options.delay || that.options.delay;
+					setTimeout(function () { that.hide() }, delay);
+				});
+			}
 
-            var items = that.element.find('.k-item');
+			$(document).click($.proxy(that._documentClick, that));
 
-            $.each(options.dataSource, function(i, el) {
+			var items = that.element.find('.k-item');
 
-                if (el.click != undefined) {
+			$.each(options.dataSource, function (i, el) {
 
-                    jQuery(items[i]).click( function(e) {
+				if (el.click != undefined) {
 
-                        //el.click.call($(e.target).parents('li'), e);
-                        that.item = $(e.target).parents('li');
-                        el.click.call(that, e);
-                    });
-                }
-            });
-        },
+					jQuery(items[i]).click(function (e) {
 
-        hide: function () {
+						//el.click.call($(e.target).parents('li'), e);
+						that.item = $(e.target).parents('li');
+						el.click.call(that, e);
+					});
+				}
+			});
+		},
 
-            if (showing) {
+		hide: function () {
 
-                hiding = true;
-                var $target = $(this.target);
-                if ($target.hasClass('k-item')) {
+			if (this.showing) {
 
-                    $target.find('.k-in').removeClass('k-state-focused');
-                }
-                this.element.fadeOut(function() {
+			    this.hiding = true;
 
-                    hiding = false;
-                    showing = false;
-                });
-            }
-        },
+			    var $target = $(this.target);
 
-        show: function (anchor, e) {
+				if ($target.hasClass('k-item')) {
 
-            if (hiding == false) {
+					$target.find('.k-in').removeClass('k-state-focused');
+				}
 
-                this.target = e.currentTarget;
-                var $target = $(this.target);
-                if ($target.hasClass('k-item')) {
+				this.element.fadeOut($.proxy(function () {
 
-                    $target.find('.k-in').addClass('k-state-focused');
-                }
-                this.element.css({'top': e.pageY, 'left': e.pageX});
-                this.element.fadeIn(function(){ showing = true; });
-            }
-        },
+				    this.hiding = false;
+				    this.showing = false;		    
 
-       _documentClick: function (e) {
+				}, this));
+			}
+		},
 
-            var that = this;
-            that.hide();
-        }
-    });
+		show: function (anchor, e) {
 
-    window.kendo.ui.plugin(MenuEx);
+			if (this.hiding == false) {
+
+				this.target = e.currentTarget;
+				var $target = $(this.target);
+				if ($target.hasClass('k-item')) {
+
+					$target.find('.k-in').addClass('k-state-focused');
+				}			
+
+			    //determine if off screen
+				var eleHeight = $(this.element).height();
+				var eleWidth = $(this.element).width();
+				var xPos = e.pageX + this.options.offsetX;
+				var yPos = e.pageY + this.options.offsetY;
+
+				if (this.enableScreenDetection) {
+				    if (
+                        (eleWidth + xPos) > window.innerWidth ||
+                        (eleHeight + yPos) > window.innerHeight
+                        ) {
+				        //off screen detected, need to ignore off set settings and mouse position and position to fix the menu
+				        if ((eleWidth + xPos) > window.innerWidth) {
+				            xPos = window.innerWidth - eleWidth - 3;
+				        }
+				        if ((eleHeight + yPos) > window.innerHeight) {
+				            yPos = window.innerHeight - eleHeight - 3;
+				        }
+				    }
+
+				}
+
+                //place menu
+				this.element.css({ 'top': yPos, 'left': xPos });
+
+				this.element.fadeIn($.proxy(function () { this.showing = true; }, this));
+			}
+		},
+
+		_documentClick: function (e) {
+
+		    var that = this;
+		    that.hide();
+		}
+	});
+
+	window.kendo.ui.plugin(MenuEx);
 
 })(jQuery);
