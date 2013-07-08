@@ -36,7 +36,7 @@
     <iframe src="iframe-1.html" id="iframe"></iframe>
 <script>
 
-    $(document).ready(function()  {
+    function iframeLoaded() {
 
             var anchor = $('#iframe').contents().find("#myButton");
 
@@ -62,7 +62,7 @@
             anchor: anchor,
             delay: 1500
         });
-    });
+    }
 </script>
 
 </body>
