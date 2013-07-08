@@ -117,8 +117,9 @@ https://github.com/insanio/kendoui.ex/
 			delay: 1000,
 			event: 'contextmenu',
 			orientation: 'vertical',
+            selector: '',
 			offsetY: 0,
-            offsetX: 0,
+            offsetX: 0
 		},
 
 		init: function (element, options) {
@@ -134,7 +135,9 @@ https://github.com/insanio/kendoui.ex/
 				var event = options.event || that.options.event;
 
 				$(document).ready(function () {
-					$(options.anchor).on(event, function (e) {
+
+					$(options.anchor).on(event, options.selector, function (e) {
+
                         e.preventDefault();
 						that.show(options.anchor, e);
 					    return false;
@@ -210,10 +213,11 @@ https://github.com/insanio/kendoui.ex/
 
                 for(var i=0; i<frames.length; i++) {
 
-                    if ($(frames[i]).contents().find(this.target)) {
+                    if ($(frames[i]).contents().find(this.target).length > 0) {
                         var p = $(frames[i]).position();
                         yPos += p.top;
                         xPos += p.left;
+                        break;
                     }
                 }
 
