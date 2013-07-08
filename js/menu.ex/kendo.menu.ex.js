@@ -131,10 +131,11 @@ https://github.com/insanio/kendoui.ex/
 
 			if (options.anchor) {
 
-				event = options.event || that.options.event;
+				var event = options.event || that.options.event;
 
 				$(document).ready(function () {
 					$(options.anchor).on(event, function (e) {
+                        e.preventDefault();
 						that.show(options.anchor, e);
 					    return false;
 					});
@@ -181,7 +182,7 @@ https://github.com/insanio/kendoui.ex/
 				this.element.fadeOut($.proxy(function () {
 
 				    this.hiding = false;
-				    this.showing = false;		    
+				    this.showing = false;
 
 				}, this));
 			}
@@ -196,13 +197,25 @@ https://github.com/insanio/kendoui.ex/
 				if ($target.hasClass('k-item')) {
 
 					$target.find('.k-in').addClass('k-state-focused');
-				}			
+				}
 
 			    //determine if off screen
 				var eleHeight = $(this.element).height();
 				var eleWidth = $(this.element).width();
 				var xPos = e.pageX + this.options.offsetX;
 				var yPos = e.pageY + this.options.offsetY;
+
+                //didn't find any more elegant decision
+                var frames = $('iframe');
+
+                for(var i=0; i<frames.length; i++) {
+
+                    if ($(frames[i]).contents().find(this.target)) {
+                        var p = $(frames[i]).position();
+                        yPos += p.top;
+                        xPos += p.left;
+                    }
+                }
 
 				if (this.enableScreenDetection) {
 				    if (
