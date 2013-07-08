@@ -2,6 +2,8 @@
 
 Here, I tried to extend Awesome Kendo UI with missed functionality.
 
+[Examples](http://insanio.github.io/kendoui.ex/examples/web/)
+
 ## Kendo UI Menu Ex
 
 MenuEx allows you to create:
@@ -91,6 +93,6 @@ Sidebar allows you to create sidebar docked to screen edge. Based on Menu.
 
 ### License
 
-Copyright (c) 2011-2012, Constantine Zykov
+Copyright (c) 2011-2013, Constantine Zykov
 
 Dual licensed under the [MIT license](https://github.com/insanio/kendoui.ex/blob/master/MIT-license.txt) and [GPL license](https://github.com/insanio/kendoui.ex/blob/master/GPL-license.txt).
