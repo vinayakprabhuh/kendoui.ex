@@ -1,5 +1,4 @@
 /*
-https://github.com/insanio/kendoui.ex/
  *# Kendo UI MenuEx by CZ
  *
  * MenuEx allows you to create:
@@ -62,7 +61,7 @@ https://github.com/insanio/kendoui.ex/
 
 /*CUSTOMIZATIONS
 05.14.2013 - JLL - added offsetY, offsetX options
-05.15.22013 - JLL - added multiple context menus on same page and show/hide work properly
+05.15.2013 - JLL - added multiple context menus on same page and show/hide work properly
                   - added screen detection mode
 */
 
@@ -223,15 +222,15 @@ https://github.com/insanio/kendoui.ex/
 
 				if (this.enableScreenDetection) {
 				    if (
-                        (eleWidth + xPos) > window.innerWidth ||
-                        (eleHeight + yPos) > window.innerHeight
+                        (eleWidth + xPos) > (window.innerWidth + window.scrollX)  ||
+                        (eleHeight + yPos) > (window.innerHeight + window.scrollY)
                         ) {
 				        //off screen detected, need to ignore off set settings and mouse position and position to fix the menu
-				        if ((eleWidth + xPos) > window.innerWidth) {
-				            xPos = window.innerWidth - eleWidth - 3;
+				        if ((eleWidth + xPos) > (window.innerWidth + window.scrollX) ) {
+				            xPos = window.innerWidth + window.scrollX - eleWidth - 3;
 				        }
-				        if ((eleHeight + yPos) > window.innerHeight) {
-				            yPos = window.innerHeight - eleHeight - 3;
+				        if ((eleHeight + yPos) > (window.innerHeight + window.scrollY) ) {
+				            yPos = window.innerHeight + window.scrollY - eleHeight - 3;
 				        }
 				    }
 
