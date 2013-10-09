@@ -67,150 +67,179 @@
 
 (function ($, undefined) {
 
-	var parent = window.kendo.ui.Menu.renderItem;
+    var parent = window.kendo.ui.Menu.renderItem;
 
-	$.extend(window.kendo.ui.Menu, {
+    $.extend(window.kendo.ui.Menu, {
 
-		renderItem: function (options) {
+        renderItem: function (options) {
 
-			var r = parent(options);
-			var injects = "";
+            var r = parent(options);
+            var injects = "";
 
-			if (options.item.data) {
+            if (options.item.data) {
 
-			    injects = " data-data='" + JSON.stringify(options.item.data) + "'";
-			}
+                injects = " data-data='" + JSON.stringify(options.item.data) + "'";
+            }
 
-			if (injects.length > 0) {
+            if (injects.length > 0) {
 
-			    var re = /(<li)([^>]*>.*)/;
-			    var m = re.exec(r);
+                var re = /(<li)([^>]*>.*)/;
+                var m = re.exec(r);
 
-			    r = m[1] + injects + m[2];
-			}
+                r = m[1] + injects + m[2];
+            }
 
-			return r;
-		}
-	});
+            return r;
+        }
+    });
 
-	//var hiding = false;
-	//var showing = false;
+    //var hiding = false;
+    //var showing = false;
 
-	var MenuEx = window.kendo.ui.Menu.extend({/** @lends kendo.ui.Menu.prototype */
+    var MenuEx = window.kendo.ui.Menu.extend({/** @lends kendo.ui.Menu.prototype */
 
-		/**
+        /**
          * target object which was clicked
          */
-		target: {},
-		/**
+        target: {},
+        /**
          * menu item which was clicked
          */
-		item: {},
-
-		hiding: false,
-		showing: false,
+        item: {},
+        ItemsCounter: 0,
+        items: [],
+        hiding: false,
+        showing: false,
         enableScreenDetection: true,
 
-		options: {
-			name: "MenuEx",
-			delay: 1000,
-			event: 'contextmenu',
-			orientation: 'vertical',
+        options: {
+            name: "MenuEx",
+            delay: 11500,
+            event: 'contextmenu',
+            orientation: 'vertical',
             selector: '',
-			offsetY: 0,
+            offsetY: 0,
             offsetX: 0
-		},
+        },
 
-		init: function (element, options) {
+        init: function (element, options) {
 
-			var that = this;
+            var that = this;
 
-			window.kendo.ui.Menu.fn.init.call(that, element, options);
+            window.kendo.ui.Menu.fn.init.call(that, element, options);
 
-			that.element.addClass('k-context-menu');
+            that.element.addClass('k-context-menu');
 
-			if (options.anchor) {
+            if (options.anchor) {
 
-				var event = options.event || that.options.event;
+                var event = options.event || that.options.event;
 
-				$(document).ready(function () {
+                $(document).ready(function () {
 
-					$(options.anchor).on(event, options.selector, function (e) {
+                    $(options.anchor).on(event, options.selector, function (e) {
 
                         e.preventDefault();
-						that.show(options.anchor, e);
-					    return false;
-					});
-				});
+                        that.show(options.anchor, e);
+                        return false;
+                    });
+                });
 
-				$(this.element).on('mouseleave', function () {
+                $(this.element).on('mouseleave', function () {
 
-					delay = options.delay || that.options.delay;
-					setTimeout(function () { that.hide() }, delay);
-				});
-			}
+                    delay = options.delay || that.options.delay;
+                    setTimeout(function () { that.hide() }, delay);
+                });
+            }
 
-			$(document).click($.proxy(that._documentClick, that));
+            $(document).click($.proxy(that._documentClick, that));
 
-			var items = that.element.find('.k-item');
+            that.items = that.element.find('.k-item');
+            $.each(options.dataSource, function (i, el) {
+                if (el.click != undefined) {
+                    jQuery(that.items[that.ItemsCounter]).click(function (e) {
+                        //el.click.call($(e.target).parents('li'), e);
+                        that.item = $(e.target).parents('li');
+                        e.preventDefault();
+                        el.click.call(that, e);
+                    });
+                }
+                else {
+                    that.ItemsCounter++;
+                }
 
-			$.each(options.dataSource, function (i, el) {
+                if (el.items != undefined) {
+                    that.registerclick(el, that);
+                }
+                else {
+                    that.ItemsCounter++;
+                }
+            });
+        },
 
-				if (el.click != undefined) {
+        registerclick: function (el, that) {
+            $.each(el.items, function (j, jl) {
+                if (jl.click != undefined) {
+                    jQuery(that.items[that.ItemsCounter]).click(function (e) {
+                        that.item = $(e.target).parents('li');
+                        e.preventDefault();
+                        jl.click.call(that, e);
+                    });
+                }
+                else {
+                    that.ItemsCounter++;
+                }
+                if (jl.items != undefined) {
+                    that.registerclick(jl, that);
+                }
+                else {
+                    that.ItemsCounter++;
+                }
+            });
+        },
 
-					jQuery(items[i]).click(function (e) {
+        hide: function () {
 
-						//el.click.call($(e.target).parents('li'), e);
-						that.item = $(e.target).parents('li');
-						el.click.call(that, e);
-					});
-				}
-			});
-		},
+            if (this.showing) {
 
-		hide: function () {
+                this.hiding = true;
 
-			if (this.showing) {
+                var $target = $(this.target);
 
-			    this.hiding = true;
+                if ($target.hasClass('k-item')) {
 
-			    var $target = $(this.target);
+                    $target.find('.k-in').removeClass('k-state-focused');
+                }
 
-				if ($target.hasClass('k-item')) {
+                this.element.fadeOut($.proxy(function () {
 
-					$target.find('.k-in').removeClass('k-state-focused');
-				}
+                    this.hiding = false;
+                    this.showing = false;
 
-				this.element.fadeOut($.proxy(function () {
+                }, this));
+            }
+        },
 
-				    this.hiding = false;
-				    this.showing = false;
+        show: function (anchor, e) {
 
-				}, this));
-			}
-		},
+            if (this.hiding == false) {
 
-		show: function (anchor, e) {
+                this.target = e.currentTarget;
+                var $target = $(this.target);
+                if ($target.hasClass('k-item')) {
 
-			if (this.hiding == false) {
+                    $target.find('.k-in').addClass('k-state-focused');
+                }
 
-				this.target = e.currentTarget;
-				var $target = $(this.target);
-				if ($target.hasClass('k-item')) {
-
-					$target.find('.k-in').addClass('k-state-focused');
-				}
-
-			    //determine if off screen
-				var eleHeight = $(this.element).height();
-				var eleWidth = $(this.element).width();
-				var xPos = e.pageX + this.options.offsetX;
-				var yPos = e.pageY + this.options.offsetY;
+                //determine if off screen
+                var eleHeight = $(this.element).height();
+                var eleWidth = $(this.element).width();
+                var xPos = e.pageX + this.options.offsetX;
+                var yPos = e.pageY + this.options.offsetY;
 
                 //didn't find any more elegant decision
                 var frames = $('iframe');
 
-                for(var i=0; i<frames.length; i++) {
+                for (var i = 0; i < frames.length; i++) {
 
                     if ($(frames[i]).contents().find(this.target).length > 0) {
                         var p = $(frames[i]).position();
@@ -220,36 +249,36 @@
                     }
                 }
 
-				if (this.enableScreenDetection) {
-				    if (
-                        (eleWidth + xPos) > (window.innerWidth + window.scrollX)  ||
+                if (this.enableScreenDetection) {
+                    if (
+                        (eleWidth + xPos) > (window.innerWidth + window.scrollX) ||
                         (eleHeight + yPos) > (window.innerHeight + window.scrollY)
                         ) {
-				        //off screen detected, need to ignore off set settings and mouse position and position to fix the menu
-				        if ((eleWidth + xPos) > (window.innerWidth + window.scrollX) ) {
-				            xPos = window.innerWidth + window.scrollX - eleWidth - 3;
-				        }
-				        if ((eleHeight + yPos) > (window.innerHeight + window.scrollY) ) {
-				            yPos = window.innerHeight + window.scrollY - eleHeight - 3;
-				        }
-				    }
+                        //off screen detected, need to ignore off set settings and mouse position and position to fix the menu
+                        if ((eleWidth + xPos) > (window.innerWidth + window.scrollX)) {
+                            xPos = window.innerWidth + window.scrollX - eleWidth - 3;
+                        }
+                        if ((eleHeight + yPos) > (window.innerHeight + window.scrollY)) {
+                            yPos = window.innerHeight + window.scrollY - eleHeight - 3;
+                        }
+                    }
 
-				}
+                }
 
                 //place menu
-				this.element.css({ 'top': yPos, 'left': xPos });
+                this.element.css({ 'top': yPos, 'left': xPos });
 
-				this.element.fadeIn($.proxy(function () { this.showing = true; }, this));
-			}
-		},
+                this.element.fadeIn($.proxy(function () { this.showing = true; }, this));
+            }
+        },
 
-		_documentClick: function (e) {
+        _documentClick: function (e) {
 
-		    var that = this;
-		    that.hide();
-		}
-	});
+            var that = this;
+            that.hide();
+        }
+    });
 
-	window.kendo.ui.plugin(MenuEx);
+    window.kendo.ui.plugin(MenuEx);
 
 })(jQuery);
